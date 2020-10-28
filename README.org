@@ -1,0 +1,21 @@
+* Prediction of Partition Coefficient Using Neural Networks and Molecular Geometric Graph method
+
+In this project, we aim to predict the partition coefficient (~ClassicalGSG~)
+value for the small molecules using ML methods.
+
+The partition coefficient is one of the main factors in determining
+the drug likeliness of a compound, as it helps determine
+bioavailability, solubility, and membrane permeability.
+
+We are employing a recently developed [[https://arxiv.org/abs/1810.03068][Geometric Scattering for Graph]]
+(GSG) method to determine a feature set for each molecule. A Deep NN
+model is trained on the features of the molecules from the GSG method
+to predict partition coefficients.For Deep NN model, we
+use [[https://pytorch.org][PyTorch]] as ML framework.
+
+* Usage
+
+
+* Installation
+
+**

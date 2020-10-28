@@ -1,0 +1,7 @@
+#+TODO: TODO | DONE CANCELLED
+* Define the framework of the projects
+** DONE [#A] Find a representation moldel for the small molecules
+   CLOSED: [2019-09-24 Tue 11:27]
+** DONE [#A] Prepare the small molecules database
+   CLOSED: [2019-09-24 Tue 11:26]
+** TODO [#A] Train and test the NN model
