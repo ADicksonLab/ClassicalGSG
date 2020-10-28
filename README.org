@@ -12,7 +12,7 @@ generator tool [[https://cgenff.umaryland.edu][CGenFF]] and [[https://ambermd.or
 These atomic attributes are transformed into index-variant molecular
 features using a recently developed method called [[https://arxiv.org/abs/1810.03068][Geometric Scattering
 for Graphs]] (GSG).  We train ClassicalGSG logP predictor models
-with neural networks (NNs) are implemented using [[https://pytorch.org][PyTorch]].  framework.
+with neural networks (NNs) which are implemented using [[https://pytorch.org][PyTorch]].
 
 
 * Installation
@@ -31,5 +31,5 @@ To use our ClassicalGSG logP predictor model run the following command:
  python -m classicalgsg.LogpPredictor molecule.mol2 molecule.str
 #+END_SRC
 
-You can generate CGenFF parameter files for your molecule using CGenFF
+You can generate CGenFF parameter files for your molecule using [[https://cgenff.umaryland.edu][CGenFF]]
 online server.
