@@ -1,21 +1,35 @@
-* Prediction of Partition Coefficient Using Neural Networks and Molecular Geometric Graph method
+* ClassicalGSG: Prediction of logP Using Classical Molecular Dynamics Atomic Attributes and  Geometric Scattering Graphs
 
-In this project, we aim to predict the partition coefficient (~ClassicalGSG~)
-value for the small molecules using ML methods.
+This project is the implementation of a method called ~ClassicalGSG~
+and has introduced in ~paper~.  In this project, we aim to predict the
+partition coefficient value for the small molecules.
 
-The partition coefficient is one of the main factors in determining
-the drug likeliness of a compound, as it helps determine
-bioavailability, solubility, and membrane permeability.
+We employ atomic attributes that are typically used to describe atoms
+in molecular dynamics simulations. These atomic attributes are
+generated using two classical molecular dynamics force fields
+generator tool [[https://cgenff.umaryland.edu][CGenFF]] and [[https://ambermd.org/AmberTools.php][Ambertools]].
 
-We are employing a recently developed [[https://arxiv.org/abs/1810.03068][Geometric Scattering for Graph]]
-(GSG) method to determine a feature set for each molecule. A Deep NN
-model is trained on the features of the molecules from the GSG method
-to predict partition coefficients.For Deep NN model, we
-use [[https://pytorch.org][PyTorch]] as ML framework.
-
-* Usage
+These atomic attributes are transformed into index-variant molecular
+features using a recently developed method called [[https://arxiv.org/abs/1810.03068][Geometric Scattering
+for Graphs]] (GSG).  We train ClassicalGSG $\log P$ predictor models
+with neural networks (NNs) are implemented using [[https://pytorch.org][PyTorch]].  framework.
 
 
 * Installation
 
-**
+To install from local repository:
+
+#+BEGIN_SRC bash
+  pip install -e .
+#+END_SRC
+
+
+* Usage
+To use our ClassicalGSG $logP$ predictor model run the following command:
+
+#+BEGIN_SRC bash
+ python classicalgsg.LogpPredictor molecule.mol2 molecule.str
+#+END_SRC
+
+You can generate CGenFF parameter files for your molecule using CGenFF
+online server.
