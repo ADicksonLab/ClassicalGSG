@@ -3,16 +3,13 @@ import os.path as osp
 
 import numpy as np
 from collections import defaultdict
-from classicalgsg.mr_models.utility import adjacency_matrix
-from classicalgsg.atomicattr.classicalmd import ClassicalMD
-
+from classicalgsg.molreps_models.utils import adjacency_matrix
+from classicalgsg.atomic_attr.classicalmd import ClassicalMD
+from classicalgsg.atomic_attr.utils import (coordinates,
+                                            connectivy_matrix)
 
 
 AC_TYPES = ['AC1', 'AC5', 'AC31', 'AC36', 'ACall']
-
-SCATTERING_MOMENT_OPERATORS =  {'(z,f,s)': (True, True, True), '(z,f)': (True, True, False),
-                                '(z,s)': (True, False, True), '(f,s)': (False, True, True)}
-
 
 class ClassicalGSG(object):
 
@@ -54,18 +51,18 @@ class GAFFGSG(ClassicalGSG):
 
         classicalmd = ClassicalMD(self.AC_type)
 
-        molecule = classicalmd.gaff_molecule(gaffmol2_file_path, mol2_file_path)
+        molecule = classicalmd.gaff_molecule(mol2_file_path, gaffmol2_file_path)
 
 
-        atomic_attributes = classicalmd.atomic_attributes(molecule, forcefields='GAFF')
+        atomic_attributes = classicalmd.atomic_attributes(molecule, forcefield='GAFF')
 
 
         if self.structure == '3D':
-            coords = classicalmd.coordinates(mol2_file_path)
+            coords = coordinates(mol2_file_path)
             adj_matrix = adjacency_matrix(coords, self.radial_cutoff)
 
         elif self.structure == '2D':
-            adj_matrix = classicalmd.coordinates(mol2_file_path)
+            adj_matrix = connectivy_matrix(mol2_file_path)
 
         wavelets = self.gsg.wavelets(adj_matrix)
 
@@ -110,15 +107,15 @@ class CGenFFGSG(ClassicalGSG):
 
 
         atomic_attributes = classicalmd.atomic_attributes(molecule,
-                                                          forcefields='CGenFF')
+                                                          forcefield='CGenFF')
 
 
         if self.structure == '3D':
-            coords = classicalmd.coordinates(mol2_file_path)
+            coords = coordinates(mol2_file_path)
             adj_matrix = adjacency_matrix(coords, self.radial_cutoff)
 
         elif self.structure == '2D':
-            adj_matrix = classicalmd.connectivy_matrix(mol2_file_path)
+            adj_matrix = connectivy_matrix(mol2_file_path)
 
 
 

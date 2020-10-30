@@ -2,11 +2,13 @@ import os
 import os.path as osp
 import numpy as np
 import pickle
-from collections import  namedtuple, defaultdict
 
-from parmed.charmm import CharmmParameterSet
+from collections import namedtuple, defaultdict
 
 import openbabel, pybel
+from parmed.charmm import CharmmParameterSet
+
+from classicalgsg.atomic_attr.utils import mol2_parser
 
 
 
@@ -96,47 +98,6 @@ class ClassicalMD(object):
         return mol_attr
 
 
-    def mol2_parser(self, mol2_file_name):
-
-        sections = {}
-        cursor = None
-        with open(mol2_file_name) as mol2file:
-            for line in  mol2file:
-                if "@<TRIPOS>" in line:
-                    cursor = line.split("@<TRIPOS>")[1].strip().lower()
-                    sections[cursor] = []
-                    continue
-                elif line.startswith("#") or line == "\n":
-                    continue
-                sections[cursor].append(line.strip())
-
-        return sections
-
-
-    def connectivy_matrix(self, mol2_file):
-        sections = self.mol2_parser(mol2_file)
-        n_atoms = len(sections['atom'])
-        connect_mat = np.zeros((n_atoms, n_atoms))
-        for line in sections['bond']:
-            (_, atom1_idx, atom2_idx, _) = line.split()
-            connect_mat[int(atom1_idx) - 1, int(atom2_idx) - 1] = 1
-            connect_mat[int(atom2_idx) - 1, int(atom1_idx) - 1] = 1
-
-
-        return connect_mat
-
-
-    def coordinates(self, mol2_file):
-
-        molecule = next(pybel.readfile("mol2", mol2_file))
-
-        coords = []
-
-        #data = defaultdict(list)
-        for atom in  molecule.atoms:
-            coords.append(atom.coords)
-
-        return np.array(coords)
 
     def cgenff_molecule(self, mol2_file, str_file):
         """FIXME! briefly describe function
@@ -171,11 +132,8 @@ class ClassicalMD(object):
 
         return cgenffmolecule
 
-
-
-
     def gaff_molecule(self, mol2_file, gaffmol2_file):
-        sections = self.mol2_parser(gaffmol2_file)
+        sections = mol2_parser(gaffmol2_file)
         molecule = self.molecule(mol2_file)
 
         gaffmolecule = []
@@ -254,23 +212,13 @@ class ClassicalMD(object):
         return np.eye(self.ATOM_TYPE_CATEGORIES)[np.array(category)]
 
 
-    def read_logp(self, logp_file):
-
-        if osp.exists(logp_file):
-            with open(logp_file, 'r') as rfile:
-                return  float(rfile.read().strip())
-
-        else:
-            print(f'There is no file names {logp_file}')
-            return None
-
-    def atomic_attributes(self, molecule, forcefields):
+    def atomic_attributes(self, molecule, forcefield='CGenFF'):
 
 
-        if forcefields == 'CGenFF':
+        if forcefield == 'CGenFF':
             ff_ljparams = self.CGENFFLJ
 
-        elif forcefields == 'GAFF':
+        elif forcefield == 'GAFF':
             ff_ljparams = self.GAFFLJ
 
 

@@ -32,21 +32,16 @@ class DataLoader:
         self.dataset_file_names = self._get_dataset_file_names()
 
     #atomtype is boolean
-    def _get_data(self, ff, atom_type, dataset_name):
+    def _get_data(self, dataset_name):
         """
         Loads the dataset  and normalize
         """
         with open(dataset_name, 'rb') as pklf:
              dataset = pkl.load(pklf)
 
-        if atom_type:
-            field_name = ff +'_features'
-        else:
-
-            field_name = ff + '_features_notype'
 
         molids = dataset['molid']
-        x = np.array(dataset[field_name])
+        x = np.array(dataset['features'])
         y = np.array(dataset['logp'])
         x = x.reshape((x.shape[0], -1))
         y = y.reshape(y.shape[0], -1)
@@ -90,7 +85,7 @@ class DataLoader:
         else:
             exit()
 
-    def _load_data(self, ff, atom_type):
+    def _load_data(self):
         """FIXME! briefly describe function
 
         :param ff:
@@ -107,7 +102,7 @@ class DataLoader:
                                 dataset_file_name)
             data_type_name , _ = osp.splitext(dataset_file_name)
 
-            x, y, molids = self._get_data(ff, atom_type, dataset_path)
+            x, y, molids = self._get_data(dataset_path)
 
             x = x.astype(np.float32)
             y_train = y.astype(np.float32)
@@ -151,9 +146,9 @@ class DataLoader:
         if self.dataset_name == 'NonStar':
             dataset_file_names.append('NonStar_test.pkl')
 
-        if self.dataset_name == 'openchem':
-            dataset_file_names.append('openchem_training.pkl')
-            dataset_file_names.append(f'openchem_test.pkl')
+        if self.dataset_name == 'chEMBL21':
+            dataset_file_names.append('chEMBL21_training.pkl')
+            dataset_file_names.append(f'chEMBL21_test.pkl')
 
         if self.dataset_name == 'SAMPL6':
             dataset_file_names.append(f'SAMPL6_test.pkl')
@@ -162,17 +157,10 @@ class DataLoader:
             dataset_file_names.append(f'SAMPL7_test.pkl')
 
 
-        if self.dataset_name == 'NCI':
-            dataset_file_names.append(f'NCI_training.pkl')
-
-        if self.dataset_name == 'DCL':
-            dataset_file_names.append(f'DCL_training.pkl')
-
-
         return dataset_file_names
 
 
-    def load_data(self, ff, atom_type):
+    def load_data(self):
         """Loads a dataset and normalize it
 
         :param ff:
@@ -187,7 +175,7 @@ class DataLoader:
         """
 
         if self._check_exists():
-            return self._load_data(ff, atom_type)
+            return self._load_data()
 
         else:
             exit()

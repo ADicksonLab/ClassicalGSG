@@ -2,7 +2,7 @@ import autograd.numpy as np
 import autograd.numpy.random as npr
 import autograd.numpy.linalg as la
 import autograd.scipy.stats as stats
-from .utility import (distance_matrix, adjacency_matrix,
+from .utils import (distance_matrix, adjacency_matrix,
                                        angle_records, fc)
 from .stats import skew, kurtosis, matrix_power
 #is in Angstruma

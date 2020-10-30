@@ -76,3 +76,18 @@ def angle_records(coords):
         angels.append(atom_angles)
 
     return angels
+
+
+def sco_to_boolean(scattering_operators):
+    sco = [False, False, False]
+
+    if scattering_operators.find('z') != -1:
+        sco[0] = True
+
+    if scattering_operators.find('f') != -1:
+        sco[1] = True
+
+    if scattering_operators.find('s') != -1:
+        sco[2] = True
+
+    return tuple(sco)
