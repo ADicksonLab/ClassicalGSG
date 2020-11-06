@@ -1,6 +1,11 @@
-import autograd.numpy as np
-import autograd.numpy.random as npr
-import autograd.numpy.linalg as la
+import numpy as np
+import numpy.random as npr
+import numpy.linalg as la
+
+# import autograd.numpy as np
+# import autograd.numpy.random as npr
+# import autograd.numpy.linalg as la
+
 import math
 #local atomic environment
 def fc(dist, cutoff):

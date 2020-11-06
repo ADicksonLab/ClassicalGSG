@@ -1,7 +1,15 @@
-import autograd.numpy as np
-import autograd.numpy.random as npr
-import autograd.numpy.linalg as la
-import autograd.scipy.stats as stats
+import numpy as np
+import numpy.random as npr
+import numpy.linalg as la
+import scipy.stats as stats
+
+
+# import autograd.numpy as np
+# import autograd.numpy.random as npr
+# import autograd.numpy.linalg as la
+# import autograd.scipy.stats as stats
+
+
 from .utils import (distance_matrix, adjacency_matrix,
                                        angle_records, fc)
 from .stats import skew, kurtosis, matrix_power
