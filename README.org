@@ -17,14 +17,32 @@ with neural networks (NNs) which are implemented using [[https://pytorch.org][Py
 
 * Installation
 
-To install from local repository:
+You should use conda to make a new virtual environment:
 
-#+BEGIN_SRC bash
-  pip install -e .
-#+END_SRC
+#+begin_src sh
+  conda create -n myenv python=3.7
+  conda activate myenv
+#+end_src
 
+Currently you must manually install some of the dependencies using
+conda. Do this first:
+
+#+begin_src sh
+  conda install -c pytorch pytorch
+  conda install -c conda-forge openbabel rdkit
+#+end_src
+
+Then install the package. Currently no packages are on PyPI so just
+install from the git repo:
+
+#+begin_src sh
+pip install git+https://github.com/ADicksonLab/ClassicalGSG.git
+#+end_src
+
+# TODO: inform about customizing pytorch installation
 
 * Usage
+
 To use our ClassicalGSG logP predictor model run the following command:
 
 #+BEGIN_SRC bash

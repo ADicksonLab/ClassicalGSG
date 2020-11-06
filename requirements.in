@@ -1,0 +1,13 @@
+numpy
+pandas
+scikit-learn
+skorch
+
+tabulate
+
+parmed
+
+# NOTE: doesn't work with pip
+# rdkit
+# pytorch
+# openbabel

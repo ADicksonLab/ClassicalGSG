@@ -1,0 +1,13 @@
+Metadata-Version: 1.1
+Name: classicalgsg
+Version: 0.0.1a0.dev0
+Summary: ClassicalGSG
+Home-page: https://github.com/ADicksonLab/ClassicalGSG
+Author: Nazanin Donyapour
+Author-email: nazanin@msu.edu
+License: MIT
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Topic :: Utilities
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
