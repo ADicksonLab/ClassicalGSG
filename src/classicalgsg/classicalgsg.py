@@ -4,7 +4,7 @@ import os.path as osp
 import numpy as np
 from collections import defaultdict
 from classicalgsg.molreps_models.utils import adjacency_matrix
-from classicalgsg.atomic_attr.classicalmd import ClassicalMD
+from classicalgsg.atomic_attr.classicalff import ClassicalFF
 from classicalgsg.atomic_attr.utils import (coordinates,
                                             connectivy_matrix)
 
@@ -41,15 +41,15 @@ class GAFFGSG(ClassicalGSG):
 
     def features(self, mol2_file_path, gaffmol2_file_path):
 
-        assert not osp.exists(mol2_file_path), \
+        assert osp.exists(mol2_file_path), \
             "mol2 file does not exists"
 
 
-        assert not osp.exists(gaffmol2_file_path), \
+        assert osp.exists(gaffmol2_file_path), \
             "gaffmol2 file does not exists"
 
 
-        classicalmd = ClassicalMD(self.AC_type)
+        classicalmd = ClassicalFF(self.AC_type)
 
         molecule = classicalmd.gaff_molecule(mol2_file_path, gaffmol2_file_path)
 
@@ -93,18 +93,17 @@ class CGenFFGSG(ClassicalGSG):
 
     def features(self, mol2_file_path, str_file_path):
 
-        # assert osp.exists(mol2_file_path), \
-        #     "mol2 file does not exists"
+        assert osp.exists(mol2_file_path), \
+             "mol2 file does not exists"
 
 
-        # assert  osp.exists(str_file_path), \
-        #     "str file does not exists"
+        assert  osp.exists(str_file_path), \
+             "str file does not exists"
 
 
-        classicalmd = ClassicalMD(self.AC_type)
+        classicalmd = ClassicalFF(self.AC_type)
 
         molecule = classicalmd.cgenff_molecule(mol2_file_path, str_file_path)
-
 
         atomic_attributes = classicalmd.atomic_attributes(molecule,
                                                           forcefield='CGenFF')

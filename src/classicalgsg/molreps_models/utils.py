@@ -1,10 +1,20 @@
+<<<<<<< Updated upstream:src/classicalgsg/molreps_models/utils.py
+=======
+# import autograd.numpy as np
+# import autograd.numpy.random as npr
+# import autograd.numpy.linalg as la
+
+>>>>>>> Stashed changes:classicalgsg/molreps_models/utils.py
 import numpy as np
 import numpy.random as npr
 import numpy.linalg as la
 
+<<<<<<< Updated upstream:src/classicalgsg/molreps_models/utils.py
 # import autograd.numpy as np
 # import autograd.numpy.random as npr
 # import autograd.numpy.linalg as la
+=======
+>>>>>>> Stashed changes:classicalgsg/molreps_models/utils.py
 
 import math
 #local atomic environment
@@ -17,16 +27,28 @@ def fc(dist, cutoff):
 
 
 def distance_matrix(positions):
-    n_atoms = positions.shape[0]
+    return la.norm(positions[:, None] - positions, dim=2, p=2)
 
-    d = np.zeros((n_atoms, n_atoms))
 
-    for i in range(n_atoms-1):
-        d[i][i] = 0
-        for j in range(i+1, n_atoms):
-            d[i][j] = la.norm(positions[i, :]-positions[j, :])
-            d[j][i] = d[i][j]
-    return d
+def adjacency_matrix(positions, radial_cutoff):
+    dist = distance_matrix(positions)
+    dist = np.where(dist>radial_cutoff,
+                       0.0,
+                       0.5 * np.cos(np.pi * dist/radial_cutoff) + 0.5)
+    return dist.fill_diagonal(0.0)
+
+
+# def distance_matrix(positions):
+#     n_atoms = positions.shape[0]
+
+#     d = np.zeros((n_atoms, n_atoms))
+
+#     for i in range(n_atoms-1):
+#         d[i][i] = 0
+#         for j in range(i+1, n_atoms):
+#             d[i][j] = la.norm(positions[i, :]-positions[j, :])
+#             d[j][i] = d[i][j]
+#     return d
 
 # def adjacency_matrix(positions, radial_cutoff):
 #     n_atoms = positions.shape[0]
@@ -41,20 +63,20 @@ def distance_matrix(positions):
 #     return np.array(dd)
 
 
-def adjacency_matrix(positions, radial_cutoff):
-    n_atoms = positions.shape[0]
+# def adjacency_matrix(positions, radial_cutoff):
+#     n_atoms = positions.shape[0]
 
-    d = [[] for _ in range(n_atoms)]
+#     d = [[] for _ in range(n_atoms)]
 
-    for i in range(n_atoms):
-        for j in range(n_atoms):
-            if i==j:
-                d[i].append(0.0)
-            else:
-                d[i].append(fc(la.norm(positions[i, :] - positions[j, :]),
-                               radial_cutoff))
+#     for i in range(n_atoms):
+#         for j in range(n_atoms):
+#             if i==j:
+#                 d[i].append(0.0)
+#             else:
+#                 d[i].append(fc(la.norm(positions[i, :] - positions[j, :]),
+#                                radial_cutoff))
 
-    return np.array(d)
+#     return np.array(d)
 
 
 
@@ -83,7 +105,7 @@ def angle_records(coords):
     return angels
 
 
-def sco_to_boolean(scattering_operators):
+def scop_to_boolean(scattering_operators):
     sco = [False, False, False]
 
     if scattering_operators.find('z') != -1:
@@ -96,3 +118,7 @@ def sco_to_boolean(scattering_operators):
         sco[2] = True
 
     return tuple(sco)
+
+def scop_to_str(scattering_operators):
+    so_str = scattering_operators[1:-1].replace(',', '')
+    return so_str.replace(' ', '')

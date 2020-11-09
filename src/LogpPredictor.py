@@ -6,7 +6,7 @@ from joblib import dump, load
 
 import torch
 from classicalgsg.molreps_models.gsg import GSG
-from classicalgsg.classicalgsg import SCATTERING_MOMENT_OPERATORS, CGenFFGSG
+from classicalgsg.classicalgsg import CGenFFGSG
 from classicalgsg.molreps_models.utils import sco_to_boolean
 
 BASE_DIR = osp.join(osp.dirname(__file__),

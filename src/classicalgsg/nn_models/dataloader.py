@@ -8,13 +8,6 @@ from sklearn import preprocessing
 from sklearn.preprocessing import StandardScaler
 
 
-#datasets's fields name ['molid', 'atom_names', 'coords',
-#'adjacency', 'wavelets', 'gaff_signals', 'gaff_signals_notype',
-#'cgenff_signals', 'cgenff_signals_notype', 'gaff_features',
-#'gaff_features_notype', 'cgenff_features', 'cgenff_features_notype',
-#'logp']
-
-
 #opens a dataset and divides into given partioning
 class DataLoader:
     def __init__(self, dataset_name, dataset_path=None):
@@ -146,9 +139,9 @@ class DataLoader:
         if self.dataset_name == 'NonStar':
             dataset_file_names.append('NonStar_test.pkl')
 
-        if self.dataset_name == 'chEMBL21':
-            dataset_file_names.append('chEMBL21_training.pkl')
-            dataset_file_names.append(f'chEMBL21_test.pkl')
+        if self.dataset_name == 'ChEMBL':
+            dataset_file_names.append('ChEMBL_training.pkl')
+            dataset_file_names.append(f'ChEMBL_test.pkl')
 
         if self.dataset_name == 'SAMPL6':
             dataset_file_names.append(f'SAMPL6_test.pkl')

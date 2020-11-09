@@ -2,6 +2,7 @@ import numpy as np
 import numpy.random as npr
 import numpy.linalg as la
 import scipy.stats as stats
+<<<<<<< Updated upstream:src/classicalgsg/molreps_models/gsg.py
 
 
 # import autograd.numpy as np
@@ -10,9 +11,11 @@ import scipy.stats as stats
 # import autograd.scipy.stats as stats
 
 
+=======
+>>>>>>> Stashed changes:classicalgsg/molreps_models/gsg.py
 from .utils import (distance_matrix, adjacency_matrix,
                                        angle_records, fc)
-from .stats import skew, kurtosis, matrix_power
+#from .stats import skew, kurtosis, matrix_power
 #is in Angstruma
 
 class GSG(object):
@@ -49,8 +52,8 @@ class GSG(object):
 
         wavelets = []
         for i, j in enumerate(steps):
-            wavelet = matrix_power(probability_mat, j) \
-                - matrix_power(probability_mat, 2*j)
+            wavelet = la.matrix_power(probability_mat, j) \
+                - la.matrix_power(probability_mat, 2*j)
 
             wavelets.append(wavelet)
 
@@ -63,8 +66,8 @@ class GSG(object):
 
         features.append(np.mean(signal, axis=0))
         features.append(np.var(signal, axis=0))
-        features.append(skew(signal, bias=False, axis=0))
-        features.append(kurtosis(signal, bias=False, axis=0))
+        features.append(stats.skew(signal, axis=0, bias=False))
+        features.append(stats.kurtosis(signal, axis=0, bias=False))
 
         return np.array(features).reshape(-1, 1)
 
@@ -74,8 +77,8 @@ class GSG(object):
         features = []
         features.append(np.mean(wavelet_signal, axis=1))
         features.append(np.var(wavelet_signal, axis=1))
-        features.append(skew(wavelet_signal, bias=False, axis=1))
-        features.append(kurtosis(wavelet_signal, bias=False, axis=1))
+        features.append(stats.skew(wavelet_signal, axis=1, bias=False))
+        features.append(stats.kurtosis(wavelet_signal, axis=1, bias=False))
 
         return np.array(features).reshape(-1, 1)
 
@@ -97,8 +100,8 @@ class GSG(object):
 
         features.append(np.mean(coefficents, axis=1))
         features.append(np.var(coefficents, axis=1))
-        features.append(skew(coefficents, bias=False, axis=1))
-        features.append(kurtosis(coefficents, bias=False, axis=1))
+        features.append(stats.skew(coefficents, axis=1, bias=False))
+        features.append(stats.kurtosis(coefficents, axis=1, bias=False))
         return np.array(features).reshape(-1, 1)
 
     def wavelets(self, adj_mat):
