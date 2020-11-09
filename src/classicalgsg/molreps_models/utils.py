@@ -1,22 +1,7 @@
-<<<<<<< Updated upstream:src/classicalgsg/molreps_models/utils.py
-=======
-# import autograd.numpy as np
-# import autograd.numpy.random as npr
-# import autograd.numpy.linalg as la
-
->>>>>>> Stashed changes:classicalgsg/molreps_models/utils.py
 import numpy as np
 import numpy.random as npr
 import numpy.linalg as la
 
-<<<<<<< Updated upstream:src/classicalgsg/molreps_models/utils.py
-# import autograd.numpy as np
-# import autograd.numpy.random as npr
-# import autograd.numpy.linalg as la
-=======
->>>>>>> Stashed changes:classicalgsg/molreps_models/utils.py
-
-import math
 #local atomic environment
 def fc(dist, cutoff):
 
@@ -61,22 +46,6 @@ def adjacency_matrix(positions, radial_cutoff):
 #             dd[i][j] = fc(la.norm(positions[i, :] - positions[j, :]), radial_cutoff)
 #             dd[j][i] = dd[i][j]
 #     return np.array(dd)
-
-
-# def adjacency_matrix(positions, radial_cutoff):
-#     n_atoms = positions.shape[0]
-
-#     d = [[] for _ in range(n_atoms)]
-
-#     for i in range(n_atoms):
-#         for j in range(n_atoms):
-#             if i==j:
-#                 d[i].append(0.0)
-#             else:
-#                 d[i].append(fc(la.norm(positions[i, :] - positions[j, :]),
-#                                radial_cutoff))
-
-#     return np.array(d)
 
 
 
