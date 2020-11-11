@@ -1,18 +1,14 @@
 import numpy as np
-import numpy.random as npr
 import numpy.linalg as la
 import scipy.stats as stats
-from .utils import (distance_matrix, adjacency_matrix,
-                                       angle_records, fc)
-#from .stats import skew, kurtosis, matrix_power
-#is in Angstruma
+
 
 class GSG(object):
 
-    def __init__(self, wavelet_step_num=4,
+    def __init__(self, wavelet_scale=4,
                  sm_operateros=(True, True, True)):
 
-        self.wavelet_step_num = wavelet_step_num
+        self.wavelet_scale = wavelet_scale
         self.sm_operateros = sm_operateros
 
     def lazy_random_walk(self, adjacency_mat):
@@ -24,18 +20,18 @@ class GSG(object):
         adj_degree = np.divide(adjacency_mat, degree_mat)
 
         # sets NAN vlaues to zero
-        #adj_degree = np.nan_to_num(adj_degree)
+        adj_degree = np.nan_to_num(adj_degree)
 
         identity = np.identity(adj_degree.shape[0])
 
         return 1/2 * (identity + adj_degree)
 
-    #calcuate the graph wavelets based on the paper
+    # calcuate the graph wavelets based on the paper
     def graph_wavelet(self, probability_mat):
 
         # 2^j
         steps = []
-        for step in range(self.wavelet_step_num):
+        for step in range(self.wavelet_scale):
 
             steps.append(2 ** step)
 
@@ -46,11 +42,10 @@ class GSG(object):
 
             wavelets.append(wavelet)
 
-
         return np.array(wavelets)
 
     def zero_order_feature(self, signal):
-        #zero order feature calcuated using signal of the graph.
+        # zero order feature calcuated using signal of the graph.
         features = []
 
         features.append(np.mean(signal, axis=0))
@@ -75,13 +70,10 @@ class GSG(object):
 
         wavelet_signal = np.abs(np.matmul(wavelets, signal))
 
-
         coefficents = []
         for i in range(1, len(wavelets)):
             coefficents.append(np.einsum('ij,ajt ->ait', wavelets[i],
                                          wavelet_signal[0:i]))
-
-
 
         coefficents = np.abs(np.concatenate(coefficents, axis=0))
 
@@ -114,7 +106,5 @@ class GSG(object):
 
         if self.sm_operateros[2]:
             gsg_features.append(self.second_order_feature(wavelets, signal))
-
-
 
         return np.concatenate(gsg_features, axis=0)

@@ -1,8 +1,7 @@
 import sys
-import os
 import os.path as osp
 import numpy as np
-from joblib import dump, load
+from joblib import load
 
 import torch
 from classicalgsg.molreps_models.gsg import GSG
@@ -10,7 +9,8 @@ from classicalgsg.classicalgsg import CGenFFGSG
 from classicalgsg.molreps_models.utils import sco_to_boolean
 
 BASE_DIR = osp.join(osp.dirname(__file__),
-                                     'trained_models')
+                    'trained_models')
+
 TRAINED_MODEL_PATH = f'{BASE_DIR}/model_openchem_CGENFF_Y_4_111.pt'
 SandardScaler_PATH = f'{BASE_DIR}/std_scaler.sav'
 
@@ -18,12 +18,14 @@ SandardScaler_PATH = f'{BASE_DIR}/std_scaler.sav'
 def load_SandardScaler(sc_path):
     return load(sc_path)
 
+
 def load_model(model_path):
     return torch.load(model_path)
 
-if __name__=='__main__':
 
-    if sys.argv[1]=='-h' or sys.argv[1]=='--h':
+if __name__ == '__main__':
+
+    if sys.argv[1] == '-h' or sys.argv[1] == '--h':
         print('LogpPredictor molecule.mol2 molecule.str')
         exit()
 

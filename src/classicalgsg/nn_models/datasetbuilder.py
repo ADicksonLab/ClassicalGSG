@@ -16,11 +16,9 @@ class DatasetBuilder(object):
 
     def create(self, mol2_files_path, param_files_path, logp_files_path):
 
-
         if not osp.exists(mol2_files_path):
             print(f'{mol2_files_path} does not exists')
             return None
-
 
         if not osp.exists(param_files_path):
             print(f'{param_files_path} does not exists')
@@ -30,13 +28,11 @@ class DatasetBuilder(object):
             print(f'{logp_files_path} does not exists')
             return None
 
-
-
         mol2_files = [f for f in os.listdir(mol2_files_path)
                       if f.endswith(".mol2")]
 
         failed_number = 0
-        #read the molecules in the mol2 files
+        # read the molecules in the mol2 files
 
         if isinstance(self.classicalgsg_method, CGenFFGSG):
             param_extension = 'str'
@@ -51,30 +47,27 @@ class DatasetBuilder(object):
 
             mol2_file = osp.join(mol2_files_path, mol2_file_name)
 
-            param_file = osp.join(param_files_path, f'{mol_id}.{param_extension}')
+            param_file = osp.join(param_files_path,
+                                  f'{mol_id}.{param_extension}')
             logp_file = osp.join(logp_files_path, f'{mol_id}.exp')
 
             all_paths = [mol2_file, param_file, logp_file]
 
             if all(osp.isfile(mol_path) for mol_path in all_paths):
 
+                logp = read_logp(logp_file)
 
-                    logp = read_logp(logp_file)
-
-                    features = self.classicalgsg_method.features(mol2_file,
-                                                                 param_file)
-
-                    dataset['molid'].append(mol_id)
-                    dataset['logp'].append(logp)
-                    dataset['features'].append(features)
+                features = self.classicalgsg_method.features(mol2_file,
+                                                             param_file)
+                dataset['molid'].append(mol_id)
+                dataset['logp'].append(logp)
+                dataset['features'].append(features)
 
             else:
-                    failed_number += 1
-
+                failed_number += 1
 
         print(f'{failed_number} molecules faild to be processed')
 
-
-        with open(self.dataset_save_path, 'wb') as pklf:
-            pkl.dump(dataset, pklf)
+        with open(self.dataset_save_path, 'wb') as wfile:
+            pkl.dump(dataset, wfile)
             print(f"dataset {self.dataset_save_path}")

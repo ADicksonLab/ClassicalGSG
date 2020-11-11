@@ -1,5 +1,4 @@
 import numpy as np
-from collections import defaultdict
 
 from tabulate import tabulate
 
@@ -27,10 +26,8 @@ class EvalMetrics:
     def PCC(self):
         return r2_score(self.prediction, self.experimental)
 
-
     @property
     def ErrorRange(self):
-
 
         # 0.5 < acceptable
         # 0.5< <1 disputable
@@ -42,47 +39,46 @@ class EvalMetrics:
 
         for diff_value in diffs:
             if diff_value < 0.5:
-                 count = categories['<0.5'] + 1
-                 categories.update({'<0.5': count})
+                count = categories['<0.5'] + 1
+                categories.update({'<0.5': count})
 
             elif diff_value >= 0.5 and diff_value < 1.0:
                 count = categories['<1'] + 1
                 categories.update({'<1': count})
 
-            elif  diff_value >= 1:
+            elif diff_value >= 1:
                 count = categories['>1'] + 1
                 categories.update({'>1': count})
 
         n_items = diffs.shape[0]
 
-        #make percentages
+        # make percentages
         for key, value in categories.items():
             categories.update({key: np.round(value*100/n_items, 3)})
 
         return categories
-
 
     def evaluate(self, metrics):
 
         results = {}
 
         for metric in metrics:
-            if metric=='MSE':
-                 results.update({metric: self.MSE})
+            if metric == 'MSE':
+                results.update({metric: self.MSE})
 
-            elif metric=='MUE':
-                 results.update({metric: self.MUE})
+            elif metric == 'MUE':
+                results.update({metric: self.MUE})
 
-            elif metric=="RMSE":
+            elif metric == 'RMSE':
                 results.update({metric: self.RMSE})
 
-            elif metric=='PCC':
+            elif metric == 'PCC':
                 results.update({metric: self.PCC})
-            elif metric=='ErrorRange':
+            elif metric == 'ErrorRange':
                 results.update(self.ErrorRange.items())
 
-
         return results
+
 
 def print_results(results, headers):
 

@@ -1,3 +1,4 @@
+import pickle as pkl
 import pandas as pd
 from tabulate import tabulate
 
@@ -38,7 +39,6 @@ class TestReporter:
         self.header_str = self.header_string(dataset_name, forcefield,
                                              atom_type)
 
-
     def header_string(self, dataset_name, forcefield, atom_type):
 
         header_str = self.REPORT_HEADER_TEMPLATE.format(
@@ -53,13 +53,12 @@ class TestReporter:
 
         results_dic = {}
 
-        for  dataset_name, result in results.items():
+        for dataset_name, result in results.items():
             results_dic.update({dataset_name: result.values()})
 
         df = pd.DataFrame.from_dict(results,  orient='index')
 
-
-        results_str = tabulate(df, headers='keys',  tablefmt='fancy_grid')
+        results_str = tabulate(df, headers='keys', tablefmt='fancy_grid')
 
         test_result_str = self.TEST_RESULTS_TEMPLATE.format(
             wavelet_steps=wavelet_steps,
@@ -70,8 +69,7 @@ class TestReporter:
 
         return df, test_result_str
 
-
-    def save(self, results_str, save_path):
+    def save_txt(self, results_str, save_path):
 
         report_string = self.header_str
         mode = 'w'
@@ -80,4 +78,15 @@ class TestReporter:
             report_string += result_str
 
         with open(save_path, mode=mode) as reporter_file:
-                reporter_file.write(report_string)
+            reporter_file.write(report_string)
+
+    def save_pickle(self, results, save_file_name):
+
+        df = pd.concat(results)
+        df.insert(0, 'Dataset', df.index)
+        df_index = pd.Series([i for i in range(df.shape[0])])
+
+        df = df.set_index(df_index)
+
+        with open(save_file_name, 'wb') as pklf:
+            pkl.dump(df, pklf)
