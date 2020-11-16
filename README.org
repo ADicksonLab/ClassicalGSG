@@ -4,9 +4,9 @@ This project is the implementation of a method called ~ClassicalGSG~
 and has introduced in ~paper~.  In this project, we aim to predict the
 partition coefficient value for the small molecules.
 
-We employ atomic attributes that are typically used to describe atoms
-in molecular dynamics simulations. These atomic attributes are
-generated using two classical molecular dynamics force fields
+We employ atomic attributes that are typically used as input
+parameters to molecular dynamics simulations. These atomic attributes
+are generated using two classical molecular dynamics force fields
 generator tool [[https://cgenff.umaryland.edu][CGenFF]] and [[https://ambermd.org/AmberTools.php][Ambertools]].
 
 These atomic attributes are transformed into index-variant molecular
@@ -46,7 +46,7 @@ pip install git+https://github.com/ADicksonLab/ClassicalGSG.git
 To use our ClassicalGSG logP predictor model run the following command:
 
 #+BEGIN_SRC bash
- python -m classicalgsg.LogpPredictor molecule.mol2 molecule.str
+ python classicalgsg.LogpPredictor molecule.mol2 molecule.str
 #+END_SRC
 
 You can generate CGenFF parameter files for your molecule using [[https://cgenff.umaryland.edu][CGenFF]]
