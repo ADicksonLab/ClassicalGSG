@@ -6,22 +6,12 @@ from joblib import load
 import torch
 from classicalgsg.molreps_models.gsg import GSG
 from classicalgsg.classicalgsg import CGenFFGSG
-from classicalgsg.molreps_models.utils import sco_to_boolean
-
-BASE_DIR = osp.join(osp.dirname(__file__),
-                    'trained_models')
-
-TRAINED_MODEL_PATH = f'{BASE_DIR}/model_openchem_CGENFF_Y_4_111.pt'
-SandardScaler_PATH = f'{BASE_DIR}/std_scaler.sav'
+from classicalgsg.molreps_models.utils import scop_to_boolean
 
 
-def load_SandardScaler(sc_path):
-    return load(sc_path)
-
-
-def load_model(model_path):
-    return torch.load(model_path)
-
+PRETRAINED_MODEL_PATH = 'classicalgsg/pretrained_models'
+PRETRAINED_MODEL = 'model_4_zfs.pt'
+SCALER = 'std_scaler.sav'
 
 if __name__ == '__main__':
 
@@ -35,7 +25,7 @@ if __name__ == '__main__':
 
     wavelet_step_num = 4
 
-    scattering_operators = sco_to_boolean('(z,f,s)')
+    scattering_operators = scop_to_boolean('(z,f,s)')
 
     gsg = GSG(wavelet_step_num, scattering_operators)
 
@@ -44,8 +34,18 @@ if __name__ == '__main__':
     x = cgenffgsg.features(mol2_file_path, str_file_path)
     x = x.reshape((-1, x.shape[0]))
 
-    model = load_model(TRAINED_MODEL_PATH)
-    scaler = load_SandardScaler(SandardScaler_PATH)
+    scaler_file_path = osp.join(osp.dirname(sys.modules[__name__].__file__),
+                                PRETRAINED_MODEL_PATH,
+                                SCALER)
+
+    model_file_path = osp.join(osp.dirname(sys.modules[__name__].__file__),
+                               PRETRAINED_MODEL_PATH,
+                               PRETRAINED_MODEL)
+
+    scaler = load(scaler_file_path)
+    model = torch.load(model_file_path)
     x = scaler.transform(x)
 
-    print(np.squeeze(model.predict(x.astype(np.float32))))
+    predicted_logP = np.squeeze(model.predict(x.astype(np.float32)))
+
+    print(f'Predicted logP values is: {predicted_logP:.2f}')

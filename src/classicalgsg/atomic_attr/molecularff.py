@@ -1,7 +1,10 @@
+import sys
 import os.path as osp
 import numpy as np
+import pkgutil
 
 from collections import namedtuple, defaultdict
+
 
 from openbabel import openbabel, pybel
 from parmed.charmm import CharmmParameterSet
@@ -10,72 +13,85 @@ from classicalgsg.atomic_attr.utils import (mol2_parser,
                                             one_hot_encode)
 
 Atom = namedtuple('Atom', 'element, atom_type, charge, hyb')
-LJParam = namedtuple('LJParam',
+FFParam = namedtuple('FFParam',
                      'atom_type, atype_encodings, radius, epsilon')
 
 
 class MolecularFF(object):
 
-    PARAM_FILE_PATH = osp.join(osp.dirname(__file__),
-                               'forcefields_params')
-    CGENFF_PARAM_FILE = osp.join(PARAM_FILE_PATH,
-                                 'par_all36_cgenff.prm')
-    GAFFLJ_FILE = osp.join(PARAM_FILE_PATH, 'gaff2_lj.dat')
+    FFPARAMS_DIRNAME = 'forcefields_params'
 
-    # Read Lj paramter files of cgenff and gaff
     def __init__(self, AC_type='AC36'):
 
         self.ATOM_TYPE_CATEGORIES = AC_type
-
-        self.CGENFF_PARAMS = CharmmParameterSet(
-            osp.join(self.PARAM_FILE_PATH,
-                     self.CGENFF_PARAM_FILE))
-        # 159
-        self.NUM_CGENFF_ATOM_TYPES = len(self.CGENFF_PARAMS.atom_types)
-
-        self.NUM_GAFF_ATOM_TYPES = 95
-
+        self.gaff_params = self.get_gaff_params()
+        self.cgenff_params = self.get_cgenff_params()
         self.cgenff_AC36 = self.AC36()
         self.gaff_AC31 = self.AC31()
 
     # make a dictionary of cgenff lj parameters for each atom type
-    def cgenff_lj(self):
+    def get_cgenff_params(self):
 
-        ljparams = {}
+        path = osp.dirname(sys.modules[__name__].__file__)
+        cgenff_paramfile_path = osp.join(path,
+                                         self.FFPARAMS_DIRNAME,
+                                         'par_all36_cgenff.prm')
+        cgenff_params = CharmmParameterSet(cgenff_paramfile_path)
+        atype_nums = len(cgenff_params.atom_types)
+
+        ffparams = {}
         atom_idx = 0
-        for atom_type, params in self.CGENFF_PARAMS.atom_types.items():
+        for atom_type, params in cgenff_params.atom_types.items():
 
             # generate one hot encoding for all atom types in the cgenff
-            one_hot_encoding = one_hot_encode(self.NUM_CGENFF_ATOM_TYPES,
+            one_hot_encoding = one_hot_encode(atype_nums,
                                               atom_idx)
 
-            ljparams[atom_type] = LJParam(atom_type=atom_type,
+            ffparams[atom_type] = FFParam(atom_type=atom_type,
                                           atype_encodings=one_hot_encoding,
                                           radius=params.rmin,
                                           epsilon=params.epsilon)
 
             atom_idx += 1
 
-        return ljparams
+        return ffparams
 
     # reads the gaff lj parameter files
-    def gaff_lj(self):
+    def get_gaff_params(self):
 
-        f = open(self.GAFFLJ_FILE, 'r')
-        ljparams = {}
-        for atom_idx, line in enumerate(f):
+        gaff_param_file = pkgutil.get_data(__name__,
+                                           osp.join(self.FFPARAMS_DIRNAME,
+                                                    'gaff2.dat'))
+        gaff_param_text = gaff_param_file.decode()
+
+        Flag = False
+        lj_section = []
+        for line in gaff_param_text.splitlines():
+            line = line.strip()
+            if Flag and line.startswith('END'):
+                break
+
+            if Flag and len(line) > 0:
+                lj_section.append(line)
+
+            if line.startswith('MOD4'):
+                Flag = True
+
+        atype_nums = len(lj_section)
+        params = {}
+        for atom_idx, line in enumerate(lj_section):
             line = line.strip()
             words = line.split()
             atom_type = words[0]
             radius = float(words[1])
             epsilon = float(words[2])
-            one_hot_encoding = one_hot_encode(self.NUM_CGENFF_ATOM_TYPES,
+            one_hot_encoding = one_hot_encode(atype_nums,
                                               atom_idx)
-            ljparams[atom_type] = LJParam(atom_type=atom_type,
-                                          atype_encodings=one_hot_encoding,
-                                          radius=radius,
-                                          epsilon=epsilon)
-        return ljparams
+            params[atom_type] = FFParam(atom_type=atom_type,
+                                        atype_encodings=one_hot_encoding,
+                                        radius=radius,
+                                        epsilon=epsilon)
+        return params
 
     def molecule(self, mol2_file):
 
@@ -110,7 +126,7 @@ class MolecularFF(object):
                 words = line.split()
                 atom_type = words[2].upper()
                 charge = float(words[3])
-                if atom_type not in self.CGENFFLJ.keys():
+                if atom_type not in self.cgenff_params.keys():
                     return []
                 if atom_type != 'LPH':
                     atom = Atom(atom_type=atom_type,
@@ -139,20 +155,16 @@ class MolecularFF(object):
 
         return gaffmolecule
 
-    @property
-    def CGENFFLJ(self):
-        return self.cgenff_lj()
-
-    @property
-    def GAFFLJ(self):
-        return self.gaff_lj()
 
     def AC36(self):
+        cgenff36_param_file = pkgutil.get_data(__name__,
+                                               osp.join(self.FFPARAMS_DIRNAME,
+                                                        'cgenff_AC36.dat'))
+        cgenff36_param_text = cgenff36_param_file.decode()
+
         atom_encodings = {}
         num_cats = 36
-        cgenff_36_path = osp.join(self.PARAM_FILE_PATH, 'cgenff_AC36.dat')
-        cgenff_36 = open(cgenff_36_path, 'r')
-        for line in cgenff_36:
+        for line in cgenff36_param_text.splitlines():
             line = line.strip()
             words = line.split()
 
@@ -162,11 +174,15 @@ class MolecularFF(object):
         return atom_encodings
 
     def AC31(self):
+
+        gaff31_param_file = pkgutil.get_data(__name__,
+                                             osp.join(self.FFPARAMS_DIRNAME,
+                                                      'gaff_AC31.dat'))
+        gaff31_param_text = gaff31_param_file.decode()
+
         atom_encodings = {}
         num_cats = 31
-        gaff_31_path = osp.join(self.PARAM_FILE_PATH, 'gaff_AC31.dat')
-        gaff_31 = open(gaff_31_path, 'r')
-        for line in gaff_31:
+        for line in gaff31_param_text.splitlines():
             line = line.strip()
             words = line.split()
             atom_encodings.update({words[0]:
@@ -202,14 +218,14 @@ class MolecularFF(object):
     def atomic_attributes(self, molecule, forcefield='CGenFF'):
 
         if forcefield == 'CGenFF':
-            ff_ljparams = self.CGENFFLJ
+            ff_params = self.cgenff_params
 
         elif forcefield == 'GAFF':
-            ff_ljparams = self.GAFFLJ
+            ff_params = self.gaff_params
 
         mol_signals = []
         for atom_idx, atom in enumerate(molecule):
-            atom_params = ff_ljparams[atom.atom_type]
+            atom_params = ff_params[atom.atom_type]
 
             if self.ATOM_TYPE_CATEGORIES == 'AC1':
 

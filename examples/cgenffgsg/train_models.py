@@ -31,12 +31,13 @@ GSG_PARAMS = {'wavelet_scale': [4, 5],
 
 
 def report(results, n_top):
-    for i in range(n_top):
-        candidate = np.flatnonzero(results['rank_test_score'] == i+1)
+    num_tests = results['rank_test_score'].shape[0]
+    for i in range(min(n_top, num_tests)):
+        candidate = np.flatnonzero(results['rank_test_score'] == i+1)[0]
         print(f'Model with rank: {i:0}')
-        print('Mean validation score:'
+        print('Mean validation score: '
               f'{results["mean_test_score"][candidate]:.3f}'
-              f'(std: {results["std_test_score"][candidate]:.3f})')
+              f' (std: {results["std_test_score"][candidate]:.3f})')
         print(f'Parameters: {results["params"][candidate]}')
 
 

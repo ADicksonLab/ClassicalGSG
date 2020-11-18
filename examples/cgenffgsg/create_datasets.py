@@ -13,10 +13,12 @@ from classicalgsg.molreps_models.utils import scop_to_boolean, scop_to_str
 GSG_PARAMS = {'wavelet_scale': [4, 5],
               'scattering_operators': ['(z,f,s)', '(z,f)', '(z,s)', '(f,s)']}
 
-DATASETS = [('ChEMBL', ''), ('Satr', 'test'),
+DATASETS = [('ChEMBL', ''), ('Star', 'test'),
             ('NonStar', 'test'), ('Huuskonen', 'test')]
 
-DATASETS_PATH = '../../datasets'
+
+
+FILES_PATH = '../../'
 
 
 def create_dataset(dataset_name, dataset_type,
@@ -26,7 +28,7 @@ def create_dataset(dataset_name, dataset_type,
           f'{wavelet_scale}',
           f'{scattering_operators}')
 
-    dataset_files_path = osp.join(DATASETS_PATH,
+    dataset_files_path = osp.join(FILES_PATH,
                                   dataset_name,
                                   dataset_type)
 
