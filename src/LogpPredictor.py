@@ -48,4 +48,4 @@ if __name__ == '__main__':
 
     predicted_logP = np.squeeze(model.predict(x.astype(np.float32)))
 
-    print(f'Predicted logP values is: {predicted_logP:.2f}')
+    print(f'Predicted logP value is: {predicted_logP:.2f}')
