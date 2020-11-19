@@ -1,7 +1,7 @@
 * ClassicalGSG: Prediction of logP Using Classical Molecular Dynamics Atomic Attributes and  Geometric Scattering Graphs
 
 This project is the implementation of a method called ~ClassicalGSG~
-and has introduced in ~paper~.  In this project, we aim to predict the
+and has been introduced in [[https://doi.org/10.26434/chemrxiv.13256222.v1]["ClassicalGSG: Prediction of logP Using Classical Molecular Force Fields and Geometric Scattering for Graphs"]].  In this project, we aim to predict the
 partition coefficient value for the small molecules.
 
 We employ atomic attributes that are typically used as input
