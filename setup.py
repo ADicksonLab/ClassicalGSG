@@ -44,6 +44,7 @@ setup(
         'numpy',
         'pandas',
         'scikit-learn',
+        'skorch',
         'tabulate',
         'ParmEd',
     ],

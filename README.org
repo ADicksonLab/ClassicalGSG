@@ -1,18 +1,20 @@
 * ClassicalGSG: Prediction of logP Using Classical Molecular Dynamics Atomic Attributes and  Geometric Scattering Graphs
 
 This project is the implementation of a method called ~ClassicalGSG~
-and has introduced in ~paper~.  In this project, we aim to predict the
-partition coefficient value for the small molecules.
+and has introduced in [[10.26434/chemrxiv.13256222.v1][ClassicalGSG: Prediction of logP Using Classical
+Molecular Force Fields and Geometric Scattering for Graphs]].  In this
+project, we aim to predict the partition coefficient value for the
+small molecules.
 
-We employ atomic attributes that are typically used as input
-parameters to molecular dynamics simulations. These atomic attributes
-are generated using two classical molecular dynamics force fields
-generator tool [[https://cgenff.umaryland.edu][CGenFF]] and [[https://ambermd.org/AmberTools.php][Ambertools]].
+Here, we use molecular features generated using a recently developed
+method called [[https://arxiv.org/abs/1810.03068][Geometric Scattering for Graphs]] (GSG).  The GSG method
+uses the graph structure of molecules to transform atomic attributes
+into index-variant molecular features.
 
-These atomic attributes are transformed into index-variant molecular
-features using a recently developed method called [[https://arxiv.org/abs/1810.03068][Geometric Scattering
-for Graphs]] (GSG).  We train ClassicalGSG logP predictor models
-with neural networks (NNs) which are implemented using [[https://pytorch.org][PyTorch]].
+The atomic attributes are generated using two classical molecular
+dynamics force fields generator tool [[https://cgenff.umaryland.edu][CGenFF]] and [[https://ambermd.org/AmberTools.php][Ambertools]].  We train
+ClassicalGSG logP predictor models with neural networks (NNs) which,
+are implemented using [[https://pytorch.org][PyTorch]].
 
 
 * Installation
@@ -32,8 +34,15 @@ conda. Do this first:
   conda install -c conda-forge openbabel rdkit
 #+end_src
 
-Then install the package. Currently no packages are on PyPI so just
-install from the git repo:
+
+To install from pip:
+
+#+BEGIN_SRC bash
+  pip install classicalgsg
+#+END_SRC
+
+
+You can install from the git repo as well:
 
 #+begin_src sh
 pip install git+https://github.com/ADicksonLab/ClassicalGSG.git
@@ -51,3 +60,7 @@ To use our ClassicalGSG logP predictor model run the following command:
 
 You can generate CGenFF parameter files for your molecule using [[https://cgenff.umaryland.edu][CGenFF]]
 online server.
+
+* Dataset
+The logP dataset can be downloaded from [[https://doi.org/10.5281/zen][Zenodo]].
+Zenodo DOI: 10.5281/zenodo.4281058
