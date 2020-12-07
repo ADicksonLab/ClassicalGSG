@@ -1,6 +1,6 @@
 import os.path as osp
 import numpy as np
-from openbabel import pybel
+from openbabel import openbabel, pybel
 
 
 def mol2_parser(mol2_file_name):
@@ -57,3 +57,36 @@ def read_logp(logp_file):
 
 def one_hot_encode(num_cats, cat_idx):
     return np.eye(num_cats)[cat_idx]
+
+
+def smi_to_2D(smiles):
+    mol = pybel.readstring('smi', smiles)
+    mol.OBMol.AddHydrogens()
+    mol.make2D()
+    num_atoms = mol.OBMol.NumAtoms()
+    connect_mat = np.zeros((num_atoms, num_atoms))
+
+    for bond in openbabel.OBMolBondIter(mol.OBMol):
+        bpoint = bond.GetBeginAtomIdx() - 1
+        epoint = bond.GetEndAtomIdx() - 1
+        connect_mat[bpoint, epoint] = 1
+        connect_mat[epoint, bpoint] = 1
+
+    return connect_mat
+
+
+def smi_to_3D(smiles):
+    OPT_STEP = 2000
+    mol = pybel.readstring('smi', smiles)
+    mol.OBMol.AddHydrogens()
+
+    # make 3D
+    mol.make3D(forcefield="gaff", steps=OPT_STEP)
+    mol.localopt(forcefield="gaff", steps=OPT_STEP)
+
+    coords = []
+
+    for atom in mol.atoms:
+        coords.append(atom.coords)
+
+    return np.array(coords)

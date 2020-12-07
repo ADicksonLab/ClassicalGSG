@@ -22,7 +22,7 @@ GSG_PARAMS = {'wavelet_scale': [4],
 DEVICE = 'cpu'
 
 
-def run_tests(results_save_path):
+def run_tests(results_save_path, test_sets):
 
     params = product(GSG_PARAMS['wavelet_scale'],
                      GSG_PARAMS['scattering_operators'])
@@ -48,11 +48,18 @@ def run_tests(results_save_path):
 
         data_loader = DataLoader(TRAIN_DATASET, dataset_path)
 
-        ChEMBL_data = data_loader.load_data()
+        DCL_data = data_loader.load_data()
 
-        test_sets = {'ChEMBL': ChEMBL_data['ChEMBL_test']}
+        x_train = DCL_data[f'{TRAIN_DATASET}_training'][0]
 
-        x_train = ChEMBL_data['ChEMBL_training'][0]
+        test_sets = {}
+        for test_set_name, path in test_set_paths.items():
+
+            data_loader = DataLoader(test_set_name,
+                                     osp.join(path, dataset_path))
+            test_data = data_loader.load_data()[f'{test_set_name}_test']
+            test_sets.update({test_set_name: test_data})
+
         scaler = StandardScaler()
         scaler.fit(x_train)
 
@@ -101,4 +108,5 @@ if __name__ == '__main__':
     if not osp.exists(results_save_path):
         os.makedirs(results_save_path)
 
-    run_tests(results_save_path)
+    test_set_paths = {'ChEMBL': './'}
+    run_tests(results_save_path, test_set_paths)

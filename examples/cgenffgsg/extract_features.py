@@ -17,7 +17,6 @@ DATASETS = [('ChEMBL', ''), ('Star', 'test'),
             ('NonStar', 'test'), ('Huuskonen', 'test')]
 
 
-
 FILES_PATH = '../../'
 
 

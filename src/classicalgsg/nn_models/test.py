@@ -1,6 +1,6 @@
 import numpy as np
 
-from logp.nn_models.evalmetrics import EvalMetrics
+from classicalgsg.nn_models.evalmetrics import EvalMetrics
 
 
 class Test:

@@ -141,6 +141,9 @@ class DataLoader:
         if self.dataset_name == 'SAMPL7':
             dataset_file_names.append('SAMPL7_test.pkl')
 
+        if self.dataset_name == 'DCL':
+            dataset_file_names.append('DCL_training.pkl')
+
         return dataset_file_names
 
     def load_data(self):

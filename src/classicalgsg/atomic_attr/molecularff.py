@@ -26,6 +26,7 @@ class MolecularFF(object):
         self.ATOM_TYPE_CATEGORIES = AC_type
         self.gaff_params = self.get_gaff_params()
         self.cgenff_params = self.get_cgenff_params()
+        self.uff_params = self.get_uff_params()
         self.cgenff_AC36 = self.AC36()
         self.gaff_AC31 = self.AC31()
 
@@ -93,6 +94,33 @@ class MolecularFF(object):
                                         epsilon=epsilon)
         return params
 
+    def get_uff_params(self):
+
+        uff_param_file = pkgutil.get_data(__name__,
+                                          osp.join(self.FFPARAMS_DIRNAME,
+                                                   'UFF.prm'))
+        uff_param_text = uff_param_file.decode()
+
+        atype_nums = 129
+        atom_idx = 0
+        params = {}
+        for line in uff_param_text.splitlines():
+            line = line.strip()
+            if line.startswith('param'):
+                words = line.split()
+                atom_type = words[1]
+                radius = float(words[4])
+                epsilon = float(words[5])
+                one_hot_encoding = one_hot_encode(atype_nums,
+                                                  atom_idx)
+                params[atom_type] = FFParam(atom_type=atom_type,
+                                            atype_encodings=one_hot_encoding,
+                                            radius=radius,
+                                            epsilon=epsilon)
+                atom_idx += 1
+
+        return params
+
     def molecule(self, mol2_file):
 
         molecule = next(pybel.readfile("mol2", mol2_file))
@@ -155,6 +183,57 @@ class MolecularFF(object):
 
         return gaffmolecule
 
+    def uff_molecule(self, smiles):
+
+        ff = openbabel.OBForceField.FindForceField("UFF")
+        mol = pybel.readstring('smi', smiles)
+
+        mol.OBMol.AddHydrogens()
+        if ff.Setup(mol.OBMol) == 0:
+            print("Could not setup forcefield")
+
+        ff.GetAtomTypes(mol.OBMol)
+        ff.GetPartialCharges(mol.OBMol)
+
+        uffmolecule = []
+        for i in range(1, mol.OBMol.NumAtoms()+1):
+            atom = mol.OBMol.GetAtom(i)
+
+            element = openbabel.GetSymbol(atom.GetAtomicNum())
+            atom_type = atom.GetData("FFAtomType").GetValue()
+            charge = atom.GetData("FFPartialCharge").GetValue()
+
+            uffmolecule.append(Atom(element=element,
+                                    atom_type=atom_type,
+                                    hyb=atom.GetHyb(),
+                                    charge=float(charge)))
+        return uffmolecule
+
+    def mmff_molecule(self, smiles):
+
+        ff = openbabel.OBForceField.FindForceField("MMFF94")
+        mol = pybel.readstring('smi', smiles)
+
+        mol.OBMol.AddHydrogens()
+        if ff.Setup(mol.OBMol) == 0:
+            print("Could not setup forcefield")
+
+        ff.GetAtomTypes(mol.OBMol)
+        ff.GetPartialCharges(mol.OBMol)
+
+        uffmolecule = []
+        for i in range(1, mol.OBMol.NumAtoms()+1):
+            atom = mol.OBMol.GetAtom(i)
+
+            element = openbabel.GetSymbol(atom.GetAtomicNum())
+            atom_type = atom.GetData("FFAtomType").GetValue()
+            charge = atom.GetData("FFPartialCharge").GetValue()
+
+            uffmolecule.append(Atom(element=element,
+                                    atom_type=atom_type,
+                                    hyb=atom.GetHyb(),
+                                    charge=float(charge)))
+        return uffmolecule
 
     def AC36(self):
         cgenff36_param_file = pkgutil.get_data(__name__,
@@ -215,14 +294,21 @@ class MolecularFF(object):
 
         return np.eye(self.ATOM_TYPE_CATEGORIES)[np.array(category)]
 
-    def atomic_attributes(self, molecule, forcefield='CGenFF'):
-
+    def ffparams(self, forcefield):
         if forcefield == 'CGenFF':
             ff_params = self.cgenff_params
 
         elif forcefield == 'GAFF':
             ff_params = self.gaff_params
 
+        elif forcefield == 'UFF':
+            ff_params = self.uff_params
+
+        return ff_params
+
+    def atomic_attributes(self, molecule, forcefield='CGenFF'):
+
+        ff_params = self.ffparams(forcefield)
         mol_signals = []
         for atom_idx, atom in enumerate(molecule):
             atom_params = ff_params[atom.atom_type]

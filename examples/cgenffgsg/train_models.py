@@ -75,15 +75,14 @@ def create_model(wavelet_scale, scattering_operators):
 
     split_dataset(wavelet_scale, scattering_operators)
 
-    data_loader = DataLoader(DATASET,
-                             f'data_{wavelet_scale}_'
-                             f'{scop_to_str(scattering_operators)}')
-
     model_save_path = osp.join(MODELS_SAVE_PATH,
                                f'model_{wavelet_scale}_'
                                f'{scop_to_str(scattering_operators)}.pkl')
 
     if not osp.exists(model_save_path):
+        data_loader = DataLoader(DATASET,
+                                 f'data_{wavelet_scale}_'
+                                 f'{scop_to_str(scattering_operators)}')
 
         data = data_loader.load_data()
 
