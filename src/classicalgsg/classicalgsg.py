@@ -182,3 +182,41 @@ class MMFFGSG(ClassicalGSG):
             adj_matrix = smi_to_2D(smiles)
 
         return self.gsg.features(adj_matrix, atomic_attributes)
+
+
+class GhemicalGSG(ClassicalGSG):
+
+    def __init__(self, gsg, structure='3D', AC_type='AC1',
+                 radial_cutoff=7.5):
+        """FIXME! briefly describe function
+
+        :param mrmodel:
+        :param structure:
+        :param AC_type:
+        :param radial_cutoff:
+        :returns:
+        :rtype:
+
+        """
+
+        self.gsg = gsg
+        self.structure = structure
+        self.AC_type = AC_type
+        self.radial_cutoff = radial_cutoff
+
+    def features(self, smiles):
+
+        molecularff = MolecularFF(self.AC_type)
+
+        molecule = molecularff.ghemicalff_molecule(smiles)
+
+        atomic_attr = molecularff.atomic_attributes(molecule,
+                                                    forcefield='Ghemical')
+        if self.structure == '3D':
+            coords = smi_to_3D(smiles)
+            adj_matrix = adjacency_matrix(coords, self.radial_cutoff)
+
+        elif self.structure == '2D':
+            adj_matrix = smi_to_2D(smiles)
+
+        return self.gsg.features(adj_matrix, atomic_attr)

@@ -27,8 +27,12 @@ class MolecularFF(object):
         self.gaff_params = self.get_gaff_params()
         self.cgenff_params = self.get_cgenff_params()
         self.uff_params = self.get_uff_params()
+        self.mmff_params = self.get_mmff_params()
+        self.ghemical_params = self.get_ghemical_params()
         self.cgenff_AC36 = self.AC36()
         self.gaff_AC31 = self.AC31()
+        self.uff_AC26 = self.AC26()
+        #import ipdb; ipdb.set_trace()
 
     # make a dictionary of cgenff lj parameters for each atom type
     def get_cgenff_params(self):
@@ -98,7 +102,7 @@ class MolecularFF(object):
 
         uff_param_file = pkgutil.get_data(__name__,
                                           osp.join(self.FFPARAMS_DIRNAME,
-                                                   'UFF.prm'))
+                                                   'uff.prm'))
         uff_param_text = uff_param_file.decode()
 
         atype_nums = 129
@@ -111,6 +115,59 @@ class MolecularFF(object):
                 atom_type = words[1]
                 radius = float(words[4])
                 epsilon = float(words[5])
+                one_hot_encoding = one_hot_encode(atype_nums,
+                                                  atom_idx)
+                params[atom_type] = FFParam(atom_type=atom_type,
+                                            atype_encodings=one_hot_encoding,
+                                            radius=radius,
+                                            epsilon=epsilon)
+                atom_idx += 1
+
+        return params
+
+    def get_mmff_params(self):
+
+        mmff_param_file = pkgutil.get_data(__name__,
+                                           osp.join(self.FFPARAMS_DIRNAME,
+                                                    'mmff.dat'))
+        mmff_param_text = mmff_param_file.decode()
+
+        atype_nums = 95
+        atom_idx = 0
+        params = {}
+        for line in mmff_param_text.splitlines():
+            line = line.strip()
+            words = line.split()
+            atom_type = words[0]
+            radius = float(words[1])
+            epsilon = float(words[2])
+            one_hot_encoding = one_hot_encode(atype_nums,
+                                              atom_idx)
+            params[atom_type] = FFParam(atom_type=atom_type,
+                                        atype_encodings=one_hot_encoding,
+                                        radius=radius,
+                                        epsilon=epsilon)
+            atom_idx += 1
+
+        return params
+
+    def get_ghemical_params(self):
+
+        ghemical_param_file = pkgutil.get_data(__name__,
+                                               osp.join(self.FFPARAMS_DIRNAME,
+                                                        'ghemical.prm'))
+        ghemical_param_text = ghemical_param_file.decode()
+
+        atype_nums = 25
+        atom_idx = 0
+        params = {}
+        for line in ghemical_param_text.splitlines():
+            line = line.strip()
+            if line.startswith('vdw'):
+                words = line.split()
+                atom_type = words[1]
+                radius = float(words[2])
+                epsilon = float(words[3])
                 one_hot_encoding = one_hot_encode(atype_nums,
                                                   atom_idx)
                 params[atom_type] = FFParam(atom_type=atom_type,
@@ -221,19 +278,43 @@ class MolecularFF(object):
         ff.GetAtomTypes(mol.OBMol)
         ff.GetPartialCharges(mol.OBMol)
 
-        uffmolecule = []
+        mmffmolecule = []
         for i in range(1, mol.OBMol.NumAtoms()+1):
             atom = mol.OBMol.GetAtom(i)
-
             element = openbabel.GetSymbol(atom.GetAtomicNum())
             atom_type = atom.GetData("FFAtomType").GetValue()
             charge = atom.GetData("FFPartialCharge").GetValue()
 
-            uffmolecule.append(Atom(element=element,
-                                    atom_type=atom_type,
-                                    hyb=atom.GetHyb(),
-                                    charge=float(charge)))
-        return uffmolecule
+            mmffmolecule.append(Atom(element=element,
+                                     atom_type=atom_type,
+                                     hyb=atom.GetHyb(),
+                                     charge=float(charge)))
+        return mmffmolecule
+
+    def ghemicalff_molecule(self, smiles):
+
+        ff = openbabel.OBForceField.FindForceField("Ghemical")
+        mol = pybel.readstring('smi', smiles)
+
+        mol.OBMol.AddHydrogens()
+        if ff.Setup(mol.OBMol) == 0:
+            print("Could not setup forcefield")
+
+        ff.GetAtomTypes(mol.OBMol)
+        ff.GetPartialCharges(mol.OBMol)
+
+        mmffmolecule = []
+        for i in range(1, mol.OBMol.NumAtoms()+1):
+            atom = mol.OBMol.GetAtom(i)
+            element = openbabel.GetSymbol(atom.GetAtomicNum())
+            atom_type = atom.GetData("FFAtomType").GetValue()
+            charge = atom.GetData("FFPartialCharge").GetValue()
+
+            mmffmolecule.append(Atom(element=element,
+                                     atom_type=atom_type,
+                                     hyb=atom.GetHyb(),
+                                     charge=float(charge)))
+        return mmffmolecule
 
     def AC36(self):
         cgenff36_param_file = pkgutil.get_data(__name__,
@@ -249,6 +330,24 @@ class MolecularFF(object):
 
             atom_encodings.update({words[0]:
                                    one_hot_encode(num_cats, int(words[2]))})
+
+        return atom_encodings
+
+    def AC26(self):
+        uff26_param_file = pkgutil.get_data(__name__,
+                                            osp.join(self.FFPARAMS_DIRNAME,
+                                                     'uff_AC26.dat'))
+        uff26_param_text = uff26_param_file.decode()
+
+        atom_encodings = {}
+        num_cats = 26
+
+        for line in uff26_param_text.splitlines():
+            line = line.strip()
+            words = line.split()
+
+            atom_encodings.update({words[0]:
+                                   one_hot_encode(num_cats, int(words[1]))})
 
         return atom_encodings
 
@@ -304,6 +403,12 @@ class MolecularFF(object):
         elif forcefield == 'UFF':
             ff_params = self.uff_params
 
+        if forcefield == 'MMFF94':
+            ff_params = self.mmff_params
+
+        if forcefield == 'Ghemical':
+            ff_params = self.ghemical_params
+
         return ff_params
 
     def atomic_attributes(self, molecule, forcefield='CGenFF'):
@@ -335,6 +440,13 @@ class MolecularFF(object):
 
             elif self.ATOM_TYPE_CATEGORIES == 'AC31':
                 atom_signal = np.concatenate((self.gaff_AC31[atom.atom_type],
+                                              np.array([atom.charge,
+                                                        atom_params.radius,
+                                                        atom_params.epsilon]
+                                              )))
+
+            elif self.ATOM_TYPE_CATEGORIES == 'AC26':
+                atom_signal = np.concatenate((self.uff_AC26[atom.atom_type],
                                               np.array([atom.charge,
                                                         atom_params.radius,
                                                         atom_params.epsilon]
