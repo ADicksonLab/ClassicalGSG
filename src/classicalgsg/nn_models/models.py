@@ -43,3 +43,40 @@ class GSGNN(nn.Module):
             y = layer(y)
 
         return y
+
+
+class OneLayerNN(nn.Module):
+    def __init__(self, n_in, n_h=1, dropout=0.0):
+        """FIXME! briefly describe function
+
+        :param n_in:
+        :param n_h:
+        :param n_layers:
+        :param dropout:
+        :returns:
+        :rtype:
+
+        """
+
+        super(OneLayerNN, self).__init__()
+        self.n_in = n_in
+
+        self.hidden = nn.Linear(n_in, 1)
+        self.dropout = nn.Dropout(dropout)
+        self.relu = nn.ReLU()
+
+    def forward(self, x):
+        """FIXME! briefly describe function
+
+        :param x:
+        :returns:
+        :rtype:
+
+        """
+
+        y = x.view(-1, self.n_in)
+        y = self.hidden(y)
+        y = self.dropout(y)
+        y = self.relu(y)
+
+        return y

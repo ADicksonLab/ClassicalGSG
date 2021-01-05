@@ -19,7 +19,7 @@ class ClassicalGSG(object):
         pass
 
 
-class GAFFGSG(ClassicalGSG):
+class GAFF2GSG(ClassicalGSG):
     def __init__(self, gsg, structure='3D', AC_type='AC1',
                  radial_cutoff=7.5):
         """FIXME! briefly describe function
@@ -108,7 +108,7 @@ class CGenFFGSG(ClassicalGSG):
         return self.gsg.features(adj_matrix, atomic_attributes)
 
 
-class UFFGSG(ClassicalGSG):
+class OBFFGSG(ClassicalGSG):
 
     def __init__(self, gsg, structure='3D', AC_type='AC1',
                  radial_cutoff=7.5):
@@ -128,90 +128,17 @@ class UFFGSG(ClassicalGSG):
         self.AC_type = AC_type
         self.radial_cutoff = radial_cutoff
 
-    def features(self, smiles):
+    def features(self, smiles, forcefield):
 
         molecularff = MolecularFF(self.AC_type)
 
-        molecule = molecularff.uff_molecule(smiles)
-
-        atomic_attributes = molecularff.atomic_attributes(molecule,
-                                                          forcefield='UFF')
-        if self.structure == '3D':
-            coords = smi_to_3D(smiles)
-            adj_matrix = adjacency_matrix(coords, self.radial_cutoff)
-
-        elif self.structure == '2D':
-            adj_matrix = smi_to_2D(smiles)
-
-        return self.gsg.features(adj_matrix, atomic_attributes)
-
-
-class MMFFGSG(ClassicalGSG):
-
-    def __init__(self, gsg, structure='3D', AC_type='AC1',
-                 radial_cutoff=7.5):
-        """FIXME! briefly describe function
-
-        :param mrmodel:
-        :param structure:
-        :param AC_type:
-        :param radial_cutoff:
-        :returns:
-        :rtype:
-
-        """
-
-        self.gsg = gsg
-        self.structure = structure
-        self.AC_type = AC_type
-        self.radial_cutoff = radial_cutoff
-
-    def features(self, smiles):
-
-        molecularff = MolecularFF(self.AC_type)
-
-        molecule = molecularff.mmff_molecule(smiles)
-
-        atomic_attributes = molecularff.atomic_attributes(molecule,
-                                                          forcefield='MMFF94')
-        if self.structure == '3D':
-            coords = smi_to_3D(smiles)
-            adj_matrix = adjacency_matrix(coords, self.radial_cutoff)
-
-        elif self.structure == '2D':
-            adj_matrix = smi_to_2D(smiles)
-
-        return self.gsg.features(adj_matrix, atomic_attributes)
-
-
-class GhemicalGSG(ClassicalGSG):
-
-    def __init__(self, gsg, structure='3D', AC_type='AC1',
-                 radial_cutoff=7.5):
-        """FIXME! briefly describe function
-
-        :param mrmodel:
-        :param structure:
-        :param AC_type:
-        :param radial_cutoff:
-        :returns:
-        :rtype:
-
-        """
-
-        self.gsg = gsg
-        self.structure = structure
-        self.AC_type = AC_type
-        self.radial_cutoff = radial_cutoff
-
-    def features(self, smiles):
-
-        molecularff = MolecularFF(self.AC_type)
-
-        molecule = molecularff.ghemicalff_molecule(smiles)
+        molecule = molecularff.openbabel_molecule(smiles,
+                                                  forcefield=forcefield)
+        if molecule is None:
+            return None
 
         atomic_attr = molecularff.atomic_attributes(molecule,
-                                                    forcefield='Ghemical')
+                                                    forcefield=forcefield)
         if self.structure == '3D':
             coords = smi_to_3D(smiles)
             adj_matrix = adjacency_matrix(coords, self.radial_cutoff)

@@ -116,11 +116,10 @@ class DataLoader:
 
         dataset_file_names = []
         if self.dataset_name == 'Huuskonen':
-            dataset_file_names.append('huuskonen_training.pkl')
-            dataset_file_names.append('huuskonen_test.pkl')
+            dataset_file_names.append('Huuskonen_test.pkl')
 
         if self.dataset_name == 'Guowei':
-            dataset_file_names.append('guowei_training.pkl')
+            dataset_file_names.append('Guowei_training.pkl')
 
         if self.dataset_name == 'FDA':
             dataset_file_names.append('FDA_test.pkl')

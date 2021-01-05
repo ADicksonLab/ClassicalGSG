@@ -24,7 +24,8 @@ class MolecularFF(object):
     def __init__(self, AC_type='AC36'):
 
         self.ATOM_TYPE_CATEGORIES = AC_type
-        self.gaff_params = self.get_gaff_params()
+        self.gaff2_params = self.get_gaff_params('gaff2.dat')
+        self.gaff_params = self.get_gaff_params('gaff.dat')
         self.cgenff_params = self.get_cgenff_params()
         self.uff_params = self.get_uff_params()
         self.mmff_params = self.get_mmff_params()
@@ -32,7 +33,6 @@ class MolecularFF(object):
         self.cgenff_AC36 = self.AC36()
         self.gaff_AC31 = self.AC31()
         self.uff_AC26 = self.AC26()
-        #import ipdb; ipdb.set_trace()
 
     # make a dictionary of cgenff lj parameters for each atom type
     def get_cgenff_params(self):
@@ -62,11 +62,11 @@ class MolecularFF(object):
         return ffparams
 
     # reads the gaff lj parameter files
-    def get_gaff_params(self):
+    def get_gaff_params(self, parameter_file):
 
         gaff_param_file = pkgutil.get_data(__name__,
                                            osp.join(self.FFPARAMS_DIRNAME,
-                                                    'gaff2.dat'))
+                                                    parameter_file))
         gaff_param_text = gaff_param_file.decode()
 
         Flag = False
@@ -240,81 +240,31 @@ class MolecularFF(object):
 
         return gaffmolecule
 
-    def uff_molecule(self, smiles):
+    def openbabel_molecule(self, smiles, forcefield='UFF'):
 
-        ff = openbabel.OBForceField.FindForceField("UFF")
+        ff = openbabel.OBForceField.FindForceField(forcefield)
         mol = pybel.readstring('smi', smiles)
 
         mol.OBMol.AddHydrogens()
         if ff.Setup(mol.OBMol) == 0:
             print("Could not setup forcefield")
+            return None
 
         ff.GetAtomTypes(mol.OBMol)
         ff.GetPartialCharges(mol.OBMol)
 
-        uffmolecule = []
-        for i in range(1, mol.OBMol.NumAtoms()+1):
-            atom = mol.OBMol.GetAtom(i)
-
-            element = openbabel.GetSymbol(atom.GetAtomicNum())
-            atom_type = atom.GetData("FFAtomType").GetValue()
-            charge = atom.GetData("FFPartialCharge").GetValue()
-
-            uffmolecule.append(Atom(element=element,
-                                    atom_type=atom_type,
-                                    hyb=atom.GetHyb(),
-                                    charge=float(charge)))
-        return uffmolecule
-
-    def mmff_molecule(self, smiles):
-
-        ff = openbabel.OBForceField.FindForceField("MMFF94")
-        mol = pybel.readstring('smi', smiles)
-
-        mol.OBMol.AddHydrogens()
-        if ff.Setup(mol.OBMol) == 0:
-            print("Could not setup forcefield")
-
-        ff.GetAtomTypes(mol.OBMol)
-        ff.GetPartialCharges(mol.OBMol)
-
-        mmffmolecule = []
+        molecule = []
         for i in range(1, mol.OBMol.NumAtoms()+1):
             atom = mol.OBMol.GetAtom(i)
             element = openbabel.GetSymbol(atom.GetAtomicNum())
             atom_type = atom.GetData("FFAtomType").GetValue()
             charge = atom.GetData("FFPartialCharge").GetValue()
 
-            mmffmolecule.append(Atom(element=element,
-                                     atom_type=atom_type,
-                                     hyb=atom.GetHyb(),
-                                     charge=float(charge)))
-        return mmffmolecule
-
-    def ghemicalff_molecule(self, smiles):
-
-        ff = openbabel.OBForceField.FindForceField("Ghemical")
-        mol = pybel.readstring('smi', smiles)
-
-        mol.OBMol.AddHydrogens()
-        if ff.Setup(mol.OBMol) == 0:
-            print("Could not setup forcefield")
-
-        ff.GetAtomTypes(mol.OBMol)
-        ff.GetPartialCharges(mol.OBMol)
-
-        mmffmolecule = []
-        for i in range(1, mol.OBMol.NumAtoms()+1):
-            atom = mol.OBMol.GetAtom(i)
-            element = openbabel.GetSymbol(atom.GetAtomicNum())
-            atom_type = atom.GetData("FFAtomType").GetValue()
-            charge = atom.GetData("FFPartialCharge").GetValue()
-
-            mmffmolecule.append(Atom(element=element,
-                                     atom_type=atom_type,
-                                     hyb=atom.GetHyb(),
-                                     charge=float(charge)))
-        return mmffmolecule
+            molecule.append(Atom(element=element,
+                                 atom_type=atom_type,
+                                 hyb=atom.GetHyb(),
+                                 charge=float(charge)))
+        return molecule
 
     def AC36(self):
         cgenff36_param_file = pkgutil.get_data(__name__,
@@ -355,7 +305,7 @@ class MolecularFF(object):
 
         gaff31_param_file = pkgutil.get_data(__name__,
                                              osp.join(self.FFPARAMS_DIRNAME,
-                                                      'gaff_AC31.dat'))
+                                                      'gaff2_AC31.dat'))
         gaff31_param_text = gaff31_param_file.decode()
 
         atom_encodings = {}
@@ -397,6 +347,9 @@ class MolecularFF(object):
         if forcefield == 'CGenFF':
             ff_params = self.cgenff_params
 
+        elif forcefield == 'GAFF2':
+            ff_params = self.gaff2_params
+
         elif forcefield == 'GAFF':
             ff_params = self.gaff_params
 
@@ -404,6 +357,9 @@ class MolecularFF(object):
             ff_params = self.uff_params
 
         if forcefield == 'MMFF94':
+            ff_params = self.mmff_params
+
+        if forcefield == 'MMFF94s':
             ff_params = self.mmff_params
 
         if forcefield == 'Ghemical':

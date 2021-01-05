@@ -57,6 +57,7 @@ To use our ClassicalGSG logP predictor model run the following command:
 
 #+BEGIN_SRC bash
  python -m LogpPredictor molecule.mol2 molecule.str
+ python -m LogpPredictor_MMFF94  smiles
 #+END_SRC
 
 You can generate CGenFF parameter files for your molecule using [[https://cgenff.umaryland.edu][CGenFF]]
