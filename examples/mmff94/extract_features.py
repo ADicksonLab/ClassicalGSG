@@ -17,7 +17,7 @@ GSG_PARAMS = {'wavelet_scale': [4, 5, 6, 7, 8],
 
 DATASETS = [('ChEMBL21_V2.sdf', 'ChEMBL', '')]
 
-DATASETS_PATH = '../training_sdf_sets'
+DATASETS_PATH = './training_sdf_sets'
 
 FORCEFIELD = 'MMFF94'
 
@@ -46,7 +46,7 @@ def create_dataset(sdf_file, dataset_name, dataset_type,
     gsg = GSG(wavelet_scale,
               scop_to_boolean(scattering_operators))
 
-    uffgsg = OBFFGSG(gsg, structure='2D', AC_type='ACall')
+    mmffgsg = OBFFGSG(gsg, structure='2D', AC_type='ACall')
 
     molecules = pybel.readfile('sdf',
                                osp.join(DATASETS_PATH, sdf_file))
@@ -54,7 +54,7 @@ def create_dataset(sdf_file, dataset_name, dataset_type,
 
     for mol in molecules:
         smiles = mol.data['smiles']
-        features = uffgsg.features(smiles, FORCEFIELD)
+        features = mmffgsg.features(smiles, FORCEFIELD)
         if features is not None:
             dataset['molid'].append(mol.data['molid'])
             dataset['logp'].append(float(mol.data['logP']))

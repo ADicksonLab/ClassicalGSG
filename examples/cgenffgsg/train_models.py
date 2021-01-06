@@ -122,7 +122,7 @@ def create_model(wavelet_scale, scattering_operators):
                           refit=True,
                           cv=3,
                           scoring='r2',
-                          n_jobs=21)
+                          n_jobs=-1)
 
         gs.fit(x_train, y_train)
 
