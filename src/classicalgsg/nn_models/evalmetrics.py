@@ -1,8 +1,8 @@
 import numpy as np
-
+import scipy.stats as st
 from tabulate import tabulate
 
-from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 
 class EvalMetrics:
@@ -24,7 +24,10 @@ class EvalMetrics:
 
     @property
     def PCC(self):
-        return r2_score(self.prediction, self.experimental)
+        x = self.prediction
+        y = self.experimental
+        _, _, r_value, _, _ = st.linregress(x, y)
+        return r_value**2
 
     @property
     def ErrorRange(self):
