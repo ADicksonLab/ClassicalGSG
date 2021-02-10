@@ -69,5 +69,5 @@ You can generate CGenFF parameter files for your molecule using [[https://cgenff
 online server.
 
 * Dataset
-The logP dataset can be downloaded from [[https://doi.org/10.5281/zenodo.4282912][Zenodo]].
-Zenodo DOI: 10.5281/zenodo.4282912
+The logP dataset can be downloaded from [[https://doi.org/10.5281/zenodo.4531015][Zenodo]].
+Zenodo DOI: 10.5281/zenodo.4531015
