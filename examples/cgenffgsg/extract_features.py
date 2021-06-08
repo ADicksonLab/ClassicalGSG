@@ -13,7 +13,7 @@ from classicalgsg.molreps_models.utils import scop_to_boolean, scop_to_str
 GSG_PARAMS = {'wavelet_scale': [4, 5],
               'scattering_operators': ['(z,f,s)', '(z,f)', '(z,s)', '(f,s)']}
 
-DATASETS = [('ChEMBL', ''), ('Star', 'test'),
+DATASETS = [('OpenChem', ''), ('Star', 'test'),
             ('NonStar', 'test'), ('Huuskonen', 'test')]
 
 

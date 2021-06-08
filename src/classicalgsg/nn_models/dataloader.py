@@ -130,9 +130,9 @@ class DataLoader:
         if self.dataset_name == 'NonStar':
             dataset_file_names.append('NonStar_test.pkl')
 
-        if self.dataset_name == 'ChEMBL':
-            dataset_file_names.append('ChEMBL_training.pkl')
-            dataset_file_names.append('ChEMBL_test.pkl')
+        if self.dataset_name == 'OpenChem':
+            dataset_file_names.append('OpenChem_training.pkl')
+            dataset_file_names.append('OpenChem_test.pkl')
 
         if self.dataset_name == 'SAMPL6':
             dataset_file_names.append('SAMPL6_test.pkl')
