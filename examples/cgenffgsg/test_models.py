@@ -11,7 +11,7 @@ from classicalgsg.nn_models.test import Test
 from classicalgsg.nn_models.reporter import TestReporter
 from classicalgsg.molreps_models.utils import scop_to_str, scop_to_boolean
 
-TRAIN_DATASET = 'ChEMBL'
+TRAIN_DATASET = 'OpenChem'
 TRAINED_MODELS_PATH = f'models/{TRAIN_DATASET}'
 FORCEFIELD = 'CGenFF'
 AC_TYPE = 'AC36'
@@ -108,5 +108,5 @@ if __name__ == '__main__':
     if not osp.exists(results_save_path):
         os.makedirs(results_save_path)
 
-    test_set_paths = {'ChEMBL': './'}
+    test_set_paths = {'OpenChem': './'}
     run_tests(results_save_path, test_set_paths)
