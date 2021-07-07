@@ -21,7 +21,7 @@ from classicalgsg.molreps_models.utils import scop_to_str
 # Running training guowei dataset of different features
 # The Gaff forcefield without atom types is going to be used
 
-DATASET = 'ChEMBL'
+DATASET = 'OpenChem'
 
 MODELS_SAVE_PATH = f'models/{DATASET}'
 
