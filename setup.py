@@ -9,7 +9,7 @@ from os.path import splitext
 
 setup(
     name='classicalgsg',
-    version='0.0.1a.dev2',
+    version='0.0.1a.dev3',
 
     author="Nazanin Donyapour",
     author_email="nazanin@msu.edu",
