@@ -15,7 +15,7 @@ from classicalgsg.molreps_models.utils import scop_to_boolean, scop_to_str
 GSG_PARAMS = {'wavelet_scale': [4, 5, 6, 7, 8],
               'scattering_operators': ['(z,f,s)', '(z,f)', '(z,s)', '(f,s)']}
 
-DATASETS = [('ChEMBL21_V2.sdf', 'ChEMBL', '')]
+DATASETS = [('OpenChem.sdf', 'OpenChem', '')]
 
 DATASETS_PATH = './training_sdf_sets'
 
