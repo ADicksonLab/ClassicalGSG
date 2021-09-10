@@ -258,6 +258,9 @@ class MolecularFF(object):
             atom = mol.OBMol.GetAtom(i)
             element = openbabel.GetSymbol(atom.GetAtomicNum())
             atom_type = atom.GetData("FFAtomType").GetValue()
+            if forcefield == 'MMFF94' and atom_type == '0':
+                print("Can not extract the right atom type")
+                return None
             charge = atom.GetData("FFPartialCharge").GetValue()
 
             molecule.append(Atom(element=element,
