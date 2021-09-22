@@ -100,6 +100,7 @@ def create_model(wavelet_scale, scattering_operators):
         lr_policy = LRScheduler(StepLR, step_size=15, gamma=0.5)
         net = NeuralNetRegressor(
             GSGNN,
+            module__n_in=n_in,
             criterion=torch.nn.MSELoss,
             max_epochs=400,
             optimizer=torch.optim.Adam,
@@ -114,7 +115,6 @@ def create_model(wavelet_scale, scattering_operators):
                 'module__n_h': [300, 400, 500],
                 'module__dropout': [0.2, 0.4],
                 'module__n_layers': [1, 2, 3, 4],
-                'module__n_in': [n_in]
         }
 
         gs = GridSearchCV(net,

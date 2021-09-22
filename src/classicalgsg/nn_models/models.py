@@ -29,52 +29,6 @@ class GSGNN(nn.Module):
 
         self.layers.append(nn.Linear(n_h, 1))
 
-
-    def forward(self, x):
-        """FIXME! briefly describe function
-
-        :param x:
-        :returns:
-        :rtype:
-
-        """
-
-        y = x.view(-1, self.n_in)
-        for _, layer in enumerate(self.layers):
-            y = layer(y)
-
-        return y
-
-
-class GSGBBP(nn.Module):
-    def __init__(self, n_in, n_h=100, n_layers=1, dropout=0.0):
-        """FIXME! briefly describe function
-
-        :param n_in:
-        :param n_h:
-        :param n_layers:
-        :param dropout:
-        :returns:
-        :rtype:
-
-        """
-
-        super(GSGNN, self).__init__()
-        self.n_in = n_in
-
-        self.layers = nn.ModuleList()
-        self.layers.append(nn.Linear(n_in, n_h))
-        self.layers.append(nn.Dropout(dropout))
-        self.layers.append(nn.ReLU())
-
-        for _ in range(n_layers):
-            self.layers.append(nn.Linear(n_h, n_h))
-            self.layers.append(nn.Dropout(dropout))
-            self.layers.append(nn.ReLU())
-
-        self.layers.append(nn.Linear(n_h, 1))
-        self.layers.append(nn.sigmoid())
-
     def forward(self, x):
         """FIXME! briefly describe function
 

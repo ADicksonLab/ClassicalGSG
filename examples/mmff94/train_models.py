@@ -20,7 +20,7 @@ from classicalgsg.molreps_models.utils import scop_to_str
 # The Gaff forcefield without atom types is going to be used
 
 
-DATASET = 'ChEMBL'
+DATASET = 'OpenChem'
 
 MODELS_SAVE_PATH = f'models/{DATASET}'
 
@@ -67,11 +67,11 @@ def train_model(wavelet_scale, scattering_operators):
         scaler.fit(x_train)
         x_train = scaler.transform(x_train)
 
-        # x_train = normalize(x_train, 'l1')
         n_in = x_train.shape[1]
         lr_policy = LRScheduler(StepLR, step_size=15, gamma=0.5)
         net = NeuralNetRegressor(
             GSGNN,
+            module__n_in=n_in,
             criterion=torch.nn.MSELoss,
             max_epochs=400,
             optimizer=torch.optim.Adam,
@@ -86,7 +86,6 @@ def train_model(wavelet_scale, scattering_operators):
             'module__n_h': [100, 200, 300, 400],
             'module__dropout': [0.0, 0.2, 0.4],
             'module__n_layers': [1, 2, 3, 4],
-            'module__n_in': [n_in]
         }
 
         gs = GridSearchCV(net,
