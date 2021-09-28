@@ -35,9 +35,10 @@ class TestReporter:
 {test_results}
 """
 
-    def __init__(self, dataset_name, forcefield, atom_type):
+    def __init__(self, dataset_name, forcefield, atom_type, precision=None):
         self.header_str = self.header_string(dataset_name, forcefield,
                                              atom_type)
+        self.precision = precision
 
     def header_string(self, dataset_name, forcefield, atom_type):
 
@@ -57,6 +58,8 @@ class TestReporter:
             results_dic.update({dataset_name: result.values()})
 
         df = pd.DataFrame.from_dict(results,  orient='index')
+        if self.precision:
+            df = df.round(self.precision)
 
         results_str = tabulate(df, headers='keys', tablefmt='fancy_grid')
 
