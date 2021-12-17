@@ -6,7 +6,7 @@
 *.pkl
 *.h5
 *.log
-wepy.egg-info
+classicalgsg.egg-info
 *.dcd
 *#*#
 *.orch
