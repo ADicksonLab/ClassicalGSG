@@ -1,3 +1,4 @@
+import sys
 import os
 import os.path as osp
 from collections import defaultdict
@@ -12,13 +13,22 @@ from classicalgsg.classicalgsg import OBFFGSG
 from classicalgsg.molreps_models.utils import scop_to_boolean, scop_to_str
 
 
-GSG_PARAMS = {'wavelet_scale': [4, 5, 6, 7, 8],
-              'scattering_operators': ['(z,f,s)', '(z,f)', '(z,s)', '(f,s)']}
+if __name__ == '__main__':
 
-DATASETS = [('OpenChem.sdf', 'OpenChem', '')]
+    if sys.argv[1] == '-h' or sys.argv[1] == '--h':
+        print('python extract_features.py path_to_the_dataset')
+        exit()
 
-DATASETS_PATH = './training_sdf_sets'
+    else:
+        DATASETS_PATH = sys.argv[1]
 
+# Example GSG parameters
+# GSG_PARAMS = {'wavelet_scale': [4, 5, 6, 7, 8],
+#               'scattering_operators': ['(z,f,s)', '(z,f)', '(z,s)', '(f,s)']}
+
+GSG_PARAMS = {'wavelet_scale': [4],
+              'scattering_operators': ['(z,f,s)']}
+DATASETS = [('DB2.sdf', 'DB2', 'training')]
 FORCEFIELD = 'MMFF94'
 
 
@@ -32,7 +42,7 @@ def create_dataset(sdf_file, dataset_name, dataset_type,
     dataset_save_path = osp.join(f'data_{wavelet_scale}_'
                                  f'{scop_to_str(scattering_operators)}',
                                  f'{dataset_name}')
-
+    
     if not osp.exists(dataset_save_path):
         os.makedirs(dataset_save_path)
 

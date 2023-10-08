@@ -1,6 +1,7 @@
 import os
 import os.path as osp
 import numpy as np
+from joblib import dump
 
 import pandas as pd
 import pickle as pkl
@@ -25,9 +26,12 @@ DATASET = 'OpenChem'
 
 MODELS_SAVE_PATH = f'models/{DATASET}'
 
+# Example GSG parameters
+# GSG_PARAMS = {'wavelet_scale': [4, 5],
+#               'scattering_operators': ['(z,f,s)', '(z,f)', '(z,s)', '(f,s)']}
 
-GSG_PARAMS = {'wavelet_scale': [4, 5],
-              'scattering_operators': ['(z,f,s)', '(z,f)', '(z,s)', '(f,s)']}
+GSG_PARAMS = {'wavelet_scale': [4],
+              'scattering_operators': ['(z,f,s)']}
 
 
 def report(results, n_top):
@@ -87,7 +91,6 @@ def create_model(wavelet_scale, scattering_operators):
         data = data_loader.load_data()
 
         x_train, y_train, _ = data[f'{DATASET}_training']
-
         x_train = x_train.astype(np.float32)
         y_train = y_train.astype(np.float32)
 
@@ -96,8 +99,15 @@ def create_model(wavelet_scale, scattering_operators):
         scaler.fit(x_train)
         x_train = scaler.transform(x_train)
 
+        # save the scaler for testing
+        scaler_save_path = osp.join(MODELS_SAVE_PATH,
+                               f'std_scaler_{wavelet_scale}_'
+                               f'{scop_to_str(scattering_operators)}.sav')
+        dump(scaler, scaler_save_path, compress=True)
+
         n_in = x_train.shape[1]
         lr_policy = LRScheduler(StepLR, step_size=15, gamma=0.5)
+
         net = NeuralNetRegressor(
             GSGNN,
             module__n_in=n_in,
@@ -108,7 +118,7 @@ def create_model(wavelet_scale, scattering_operators):
             callbacks=[lr_policy],
             device='cpu',
             batch_size=256,
-            verbose=0,
+            #verbose=0,
         )
 
         params = {
@@ -120,10 +130,10 @@ def create_model(wavelet_scale, scattering_operators):
         gs = GridSearchCV(net,
                           params,
                           refit=True,
-                          cv=3,
+                          cv=5,
                           scoring='r2',
                           n_jobs=-1)
-
+  
         gs.fit(x_train, y_train)
 
         # save the trained model

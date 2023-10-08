@@ -1,4 +1,5 @@
 import os
+import sys
 import os.path as osp
 
 from itertools import product
@@ -9,16 +10,23 @@ from classicalgsg.classicalgsg import CGenFFGSG
 from classicalgsg.nn_models.datasetbuilder import DatasetBuilder
 from classicalgsg.molreps_models.utils import scop_to_boolean, scop_to_str
 
+# Examples params
+# GSG_PARAMS = {'wavelet_scale': [4, 5],
+#               'scattering_operators': ['(z,f,s)', '(z,f)', '(z,s)', '(f,s)']}
 
-GSG_PARAMS = {'wavelet_scale': [4, 5],
-              'scattering_operators': ['(z,f,s)', '(z,f)', '(z,s)', '(f,s)']}
+GSG_PARAMS = {'wavelet_scale': [4],
+              'scattering_operators': ['(z,f,s)']}
+DATASETS = [('OpenChem', ''), ('Star', 'test'), ('NonStar', 'test'),
+            ('Huuskonen', 'test')]
 
-DATASETS = [('OpenChem', ''), ('Star', 'test'),
-            ('NonStar', 'test'), ('Huuskonen', 'test')]
+if __name__ == '__main__':
 
+    if sys.argv[1] == '-h' or sys.argv[1] == '--h':
+        print('python extract_features.py path_to_the_dataset')
+        exit()
 
-FILES_PATH = '../../'
-
+    else:
+        FILES_PATH = sys.argv[1]
 
 def create_dataset(dataset_name, dataset_type,
                    wavelet_scale, scattering_operators):
