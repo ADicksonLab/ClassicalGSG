@@ -3,7 +3,6 @@
 */__pycache__/
 .DS_Store
 *__pycache__*
-*.pkl
 *.h5
 *.log
 classicalgsg.egg-info
