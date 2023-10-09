@@ -107,4 +107,4 @@ class GSG(object):
         if self.sm_operateros[2]:
             gsg_features.append(self.second_order_feature(wavelets, signal))
 
-        return np.concatenate(gsg_features, axis=0)
+        return np.nan_to_num(np.concatenate(gsg_features, axis=0))

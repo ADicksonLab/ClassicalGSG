@@ -1,7 +1,7 @@
 import os
 import os.path as osp
 import numpy as np
-
+from joblib import dump
 
 import torch
 
@@ -20,13 +20,13 @@ from classicalgsg.molreps_models.utils import scop_to_str
 # The Gaff forcefield without atom types is going to be used
 
 
-DATASET = 'OpenChem'
+DATASET = 'DB2'
 
 MODELS_SAVE_PATH = f'models/{DATASET}'
 
 
-GSG_PARAMS = {'wavelet_scale': [4, 5, 6, 7, 8],
-              'scattering_operators': ['(z,f,s)', '(z,f)', '(z,s)', '(f,s)']}
+GSG_PARAMS = {'wavelet_scale': [4],
+              'scattering_operators': ['(z,f,s)']}
 
 
 def report(results, n_top):
@@ -66,6 +66,10 @@ def train_model(wavelet_scale, scattering_operators):
         scaler = StandardScaler()
         scaler.fit(x_train)
         x_train = scaler.transform(x_train)
+        scaler_save_path = osp.join(MODELS_SAVE_PATH,
+                               f'std_scaler_{wavelet_scale}_'
+                               f'{scop_to_str(scattering_operators)}.sav')
+        dump(scaler, scaler_save_path, compress=True)
 
         n_in = x_train.shape[1]
         lr_policy = LRScheduler(StepLR, step_size=15, gamma=0.5)

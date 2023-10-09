@@ -115,33 +115,15 @@ class DataLoader:
     def _get_dataset_file_names(self):
 
         dataset_file_names = []
-        if self.dataset_name == 'Huuskonen':
-            dataset_file_names.append('Huuskonen_test.pkl')
+        if self.dataset_name in ['Huuskonen', 'FDA', 'Star, NonStar', 'SAMPL6', 'SAMPL7']:
+            dataset_file_names.append(f'{self.dataset_name}_test.pkl')
 
-        if self.dataset_name == 'Guowei':
-            dataset_file_names.append('Guowei_training.pkl')
-
-        if self.dataset_name == 'FDA':
-            dataset_file_names.append('FDA_test.pkl')
-
-        if self.dataset_name == 'Star':
-            dataset_file_names.append('Star_test.pkl')
-
-        if self.dataset_name == 'NonStar':
-            dataset_file_names.append('NonStar_test.pkl')
+        if self.dataset_name in ['Guowei', 'DCL', 'DB1', 'DB2', 'DB3', 'DB4']:
+            dataset_file_names.append(f'{self.dataset_name}_training.pkl')
 
         if self.dataset_name == 'OpenChem':
-            dataset_file_names.append('OpenChem_training.pkl')
-            dataset_file_names.append('OpenChem_test.pkl')
-
-        if self.dataset_name == 'SAMPL6':
-            dataset_file_names.append('SAMPL6_test.pkl')
-
-        if self.dataset_name == 'SAMPL7':
-            dataset_file_names.append('SAMPL7_test.pkl')
-
-        if self.dataset_name == 'DCL':
-            dataset_file_names.append('DCL_training.pkl')
+            dataset_file_names.append(f'{self.dataset_name}_training.pkl')
+            dataset_file_names.append(f'{self.dataset_name}_test.pkl')
 
         return dataset_file_names
 

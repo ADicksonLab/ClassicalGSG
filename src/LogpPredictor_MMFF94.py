@@ -10,7 +10,7 @@ from classicalgsg.molreps_models.utils import scop_to_boolean
 
 
 PRETRAINED_MODEL_PATH = 'classicalgsg/pretrained_models'
-PRETRAINED_MODEL = 'model_4_zfs_MMFF.pt'
+PRETRAINED_MODEL = 'model_4_zfs_MMFF.pkl'
 SCALER = 'std_scaler_MMFF.sav'
 FORCEFIELD = 'MMFF94'
 
